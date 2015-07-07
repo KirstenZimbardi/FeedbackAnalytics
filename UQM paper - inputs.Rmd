@@ -54,7 +54,7 @@ dup = function(df, col.dup, col.return) {
 
 
 #load data
-ProjectID = read.csv("ProjectIDs.csv")
+ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
 projects()
 graphs()
 
@@ -67,7 +67,7 @@ demog = Demog() #creates a list called demog for the 4 semesters
 
 ls = AcP.biol
 for (l in 1:length(ls))
-  print(lapply(ls, summary)[[l]][1:3])
+  print(lapply(ls, nrow)[[l]])
   
 ```
 

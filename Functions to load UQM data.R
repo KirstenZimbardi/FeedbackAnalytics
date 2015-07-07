@@ -1,8 +1,10 @@
 #functions to load data
 
+folder = "./Data Stage 1/"
+
 Ac.performance = function(projects, project.names, course)
 {      
-  file.names <- lapply(projects, function(x){paste0("AcP", x, "DeID.csv")})
+  file.names <- lapply(projects, function(x){paste0(folder, "AcP", x, "DeID.csv")})
   AcP <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
   names(AcP) <- project.names
   if (course == "biol")
@@ -21,7 +23,7 @@ Ac.performance = function(projects, project.names, course)
 
 Fb.provision = function(projects, project.names)
 {
-  file.names <- lapply(projects, function(x){paste0("FbP", x, "DeID.csv")})
+  file.names <- lapply(projects, function(x){paste0(folder, "FbP", x, "DeID.csv")})
   FbP <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
   names(FbP) <- project.names
   for (i in 1:length(FbP))
@@ -33,7 +35,7 @@ Fb.provision = function(projects, project.names)
 
 Fb.use = function(projects, project.names)
 {
-  file.names <- lapply(projects, function(x){paste0("FbU", x, "DeID.csv")})
+  file.names <- lapply(projects, function(x){paste0(folder, "FbU", x, "DeID.csv")})
   FbU <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
   names(FbU) <- project.names
   for (i in 1:7)
@@ -49,10 +51,10 @@ Fb.use = function(projects, project.names)
 
 Demog = function(...)
 {
-  file.names <- lapply(1:2, function(x){paste0("BIOL", x, "demogDeID.csv")})
+  file.names <- lapply(1:2, function(x){paste0(folder, "BIOL", x, "demogDeID.csv")})
   demog.biol <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
   
-  file.names <- lapply(1:2, function(x){paste0("BIOM", x, "demogDeID.csv")})
+  file.names <- lapply(1:2, function(x){paste0(folder, "BIOM", x, "demogDeID.csv")})
   demog.biom <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
   
   demog = c(demog.biol, demog.biom)

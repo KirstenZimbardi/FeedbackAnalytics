@@ -17,8 +17,9 @@ require(reshape2)
 require(dplyr)
 
 #load data
-demog = read.csv("demog.csv", header=TRUE, stringsAsFactors=FALSE)
-AcP.df = read.csv("AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+#folder = "./Data Stage 2/"
+demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
+AcP.df = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
 
 #load functions
 stats.mean.sem = function(df, dv, iv)
