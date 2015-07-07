@@ -1,0 +1,600 @@
+---
+title: "UQM paper figures - academic performance"
+author: "KZ"
+date: "28 May 2015"
+output: html_document
+---
+
+#Import, clean, transform export    
+BIOL1040 and BIOM2011, 2013, Sem 1 and 2
+```{r}
+#clean workspace
+rm(list=ls())
+
+#packages
+#require(RCurl)
+require(bitops)
+require(reshape2)
+require(dplyr)
+"%w/o%" <- function(x, y) x[!x %in% y] #--  x without y
+
+#functions
+source("Functions to load UQM data.R")
+source("HelperFunctions.R")
+source("MyLogs.R")
+
+ls.dim = function(ls)
+  {
+  for (l in 1:length(ls))
+    print(dim(ls[[l]]))
+  }
+
+df.mark.convert = function(df, col1, col2)
+{
+  for (j in col1:col2)
+    for (i in 1:nrow(df))
+    {
+      if (df[i,j] == 100)
+        df[i,j] = 4
+      if (df[i,j] == 80)
+        df[i,j] = 3
+      if (df[i,j] == 60)
+        df[i,j] = 2
+      if (df[i,j] == 40)
+        df[i,j] = 1
+      if (df[i,j] == 20)
+        df[i,j] = 0
+    }
+  return(df)
+}
+
+dup = function(df, col.dup, col.return) {
+  return(unique(df[(which(duplicated(df[,col.dup]))),col.return]))
+}
+
+
+#load data
+ProjectID = read.csv("ProjectIDs.csv")
+projects()
+graphs()
+
+#AcP = Ac.performance(project.num, project.names) #creates a list called AcP for the 11 reports
+AcP.biol = Ac.performance(project.num[1:7], project.names.formative[1:7], "biol")
+AcP.biom = Ac.performance(project.num[8:11], project.names[8:11], "biom")
+FbP = Fb.provision(project.num, project.names.formative) #creates a list called FbP for the 11 reports
+FbU = Fb.use(project.num, project.names.formative) #creates a list called FbU for the 11 reports
+demog = Demog() #creates a list called demog for the 4 semesters
+
+ls = AcP.biol
+for (l in 1:length(ls))
+  print(lapply(ls, summary)[[l]][1:3])
+  
+```
+
+#removing errors
+##FbU errors  
+removes huge mB4scroll value that is inconsistent with timestamps  
+```{r}
+FbU[[5]][which(FbU[[5]][,1] == 440572),15] = 4587 
+```
+
+##demographics errors  
+removes students with duplicate rows within a single semester unit  
+(all appear to have 2 values for OP)  
+```{r}
+ls = demog
+ls.names(ls)
+
+ls.stud.dup = NULL
+for (l in 1:length(ls))
+    ls.stud.dup[[l]] = filter(ls[[l]], duplicated(StudentID)) %>% select(StudentID)
+ls.stud.dup
+
+for (l in 1:length(ls))
+  for (i in 1:nrow(ls.stud.dup[[l]]))
+    print(ls[[l]][which(ls[[l]][,1] == ls.stud.dup[[l]][i,]),])
+
+ls.dim(ls)
+ls[[1]] = ls[[1]][-457,]
+ls[[1]] = ls[[1]][-75,]
+ls[[2]] = ls[[2]][-885,]
+ls[[2]] = ls[[2]][-541,]
+ls[[3]] = ls[[3]][-130,]
+ls[[4]] = ls[[4]][-39,]
+
+demog = ls
+```
+
+
+#All
+converting ls to df 
+```{r}
+
+AcP.biol.df = ls.df(AcP.biol, 0)
+AcP.biom.df = ls.df(AcP.biom, 7)
+
+SubID.StudID = rbind(AcP.biol.df[,1:2], AcP.biom.df[,1:2])
+
+FbU.df = ls.df(FbU, 0)
+
+FbP.df = ls.df(FbP, 0)
+FbP.df = rename(FbP.df, 1, "SubmissionID")
+FbP.df2 = merge(FbP.df, SubID.StudID, by="SubmissionID")
+FbP.df = FbP.df2[,c(1,17,2:16)]
+
+ls = demog
+df = ls[[1]]
+  for (l in 2:length(ls))
+  {
+    df = rbind(df, ls[[l]])
+  }
+df = df[,c(1,18,19,6:13,15,2,5,3,17,16)]
+df = rename(df, 13:14, c("course", "sem"))
+demog.df = df
+
+#summary(AcP.biol.df)
+
+```
+
+##AcP errors
+removing unpublished submissions  
+```{r}
+#BIOL1040
+df = AcP.biol.df
+unpub = rev(which(df[,4] == "N/A"))
+df[unpub[1:5],]
+df = df[-unpub,]
+AcP.biol.df = df
+
+#BIOM2011
+df = AcP.biom.df
+unpub = rev(which(df[,4] == "N/A"))
+df[unpub[1:5],]
+df = df[-unpub,]
+AcP.biom.df = df
+```
+
+removing incomplete cases  
+```{r}
+df = AcP.biol.df
+#protecting the cases where methods controls are missing (not marked for R0)
+table(df[,8])
+length(which(is.na(df[,8])))
+for (i in 1:nrow(df)) {
+  if(df[i,21] == "BIOL1040Sem1Report 0") {
+    df[i,8] = 100
+  }
+}
+table(df[,8])
+length(which(is.na(df[,8])))
+df[which(is.na(df[,8])),c(1:9,21)]
+df = df[complete.cases(df[,5:16]),]
+AcP.biol.df = df
+
+#BIOM2011
+df = AcP.biom.df
+df = df[complete.cases(df[,5:19]),]
+AcP.biom.df = df
+```
+
+remarks
+*Level 1*  
+```{r}
+df = AcP.biol.df
+studs.remark = NULL
+
+studs.submissions = df %>% group_by(StudentID, project) %>% tally(sort = TRUE)
+table(studs.submissions$n)
+filter(studs.submissions, n >= 2) 
+studs.remark = filter(studs.submissions, n >= 2) # %>% select(1:4)
+studs.remark[1:5,]
+studs.remark = as.data.frame(studs.remark)
+
+df2 = NULL
+for (i in 1:nrow(studs.remark)) {
+  df2 = rbind(df2, subset(df, StudentID == studs.remark[i,1] & project == studs.remark[i,2]))
+}
+df2[1:5,]
+
+df2[,4] = as.POSIXct(df2[,4], tz = "UTC", format = "%d/%m/%y %H:%M")
+df2 = df2 %>% group_by(StudentID) %>% arrange(Publish.Time)
+
+first.sub = df2 %>% distinct(StudentID)
+
+df3 = df2 %>% group_by(StudentID) %>% arrange(desc(Publish.Time))
+remarks = df3 %>% distinct(StudentID)
+
+df2 %>% group_by(StudentID) %>% tally() %>% arrange(desc(n))
+df2[which(df2[,1] == "S8639671"),]
+first.sub[which(first.sub[,1] == "S8639671"),]
+remarks[which(remarks[,1] == "S8639671"),]
+remarks = rbind(remarks, df2[which(df2[,2] == 3407),])
+remarks = remarks %>% group_by(StudentID) %>% arrange(desc(Publish.Time))
+
+first.sub = as.data.frame(first.sub)
+remarks = as.data.frame(remarks)
+
+remarks.subID = remarks[,2]
+
+#df[,2] %in% remarks.subID
+length(df[,2])
+length(df[,2] %w/o% remarks.subID)
+
+df.fixed = df[-rev(which(df[,2] %in% remarks.subID)),]
+
+AcP.biol.df = df.fixed
+AcP.biol.df.remarks = as.data.frame(df2)
+remarks.subID.biol = remarks.subID
+```
+ 
+*Level 2*    
+```{r}
+df = AcP.biom.df
+studs.remark = NULL
+
+studs.submissions = df %>% group_by(StudentID, project) %>% tally(sort = TRUE)
+table(studs.submissions$n)
+filter(studs.submissions, n >= 2) 
+studs.remark = filter(studs.submissions, n >= 2) # %>% select(1:4)
+studs.remark = as.data.frame(studs.remark)
+
+df2 = NULL
+for (i in 1:nrow(studs.remark)) {
+  df2 = rbind(df2, subset(df, StudentID == studs.remark[i,1] & project == studs.remark[i,2]))
+}
+df2[1:5,]
+
+df2[,4] = as.POSIXct(df2[,4], tz = "UTC", format = "%d/%m/%y %H:%M")
+df2 = df2 %>% group_by(StudentID) %>% arrange(Publish.Time)
+
+first.sub = df2 %>% distinct(StudentID)
+
+df3 = df2 %>% group_by(StudentID) %>% arrange(desc(Publish.Time))
+remarks = df3 %>% distinct(StudentID)
+
+df2 %>% group_by(StudentID) %>% tally() %>% arrange(desc(n))
+
+first.sub = as.data.frame(first.sub)
+remarks = as.data.frame(remarks)
+
+remarks.subID = remarks[,2]
+
+#df[,2] %in% remarks.subID
+length(df[,2])
+length(df[,2] %w/o% remarks.subID)
+
+df.fixed = df[-rev(which(df[,2] %in% remarks.subID)),]
+
+AcP.biom.df = df.fixed
+AcP.biom.df.remarks = as.data.frame(df2)
+remarks.subID.biom = remarks.subID
+
+remarks.subID = c(remarks.subID.biol, remarks.subID.biom)
+
+```
+
+
+##demographics
+#students who withdrew  
+converting grades to categories  
+```{r}
+df = demog.df
+col = 15
+table(df[,col])
+grades = as.data.frame(names(table(df[,col])))
+grades[,2] = c(1,2,2,2,3,4,3,3,2,3,4,4,5,6,7,rep("withdrawn", 3))
+new.col = dim(df)[2] + 1
+df[,new.col] = 0
+df = rename(df, new.col, "Course.Grade")
+for (i in 1:nrow(df)) {
+  for (j in 1:length(grades[,1])) {
+    if (df[i,col] == grades[j,1])
+      df[i,new.col] = grades[j,2]
+    }
+}
+#df[1:5,15:18]
+df = df[,c(1:col,new.col,16,17)]
+demog.df = df
+```
+
+identifying studetns who withrew  
+```{r}
+df = demog.df
+
+withdrew = filter(df, Course.Grade == "withdrawn") 
+withdrew %>% group_by(course, sem) %>% tally(sort=FALSE)
+studs.withdrew = as.data.frame(withdrew %>% select(StudentID, course, sem))
+
+w = NULL
+for (i in 1:nrow(studs.withdrew))
+  w[i] = paste0(studs.withdrew[i,1], studs.withdrew[i,2], "Sem", studs.withdrew[i,3])
+w
+
+new.col = dim(df)[2] + 1
+df[,new.col] = 0
+df = rename(df, new.col, "UniqueID")
+for (i in 1:nrow(df)) {
+      df[i,new.col] = paste0(df[i,1], df[i,13], "Sem", df[i,14])
+}
+
+
+#df2 = df[(df[,19] %w/o% w),]
+#df2 = df[-(df[,19] %in% w),]
+demog.wo.withrawn = df[-rev(which(df[,19] %in% w)),]
+
+```
+
+finding withrawn students' submission IDs and removing from AcP  
+using AcP as master list to determine corpus  
+```{r}
+
+rm.withdrawals = function(df, stud.col, course.col, sem.col) {
+  new.col = dim(df)[2] + 1
+  df[,new.col] = 0
+  df = rename(df, new.col, "UniqueID")
+  for (i in 1:nrow(df)) {
+        df[i,new.col] = paste0(df[i,stud.col], df[i,course.col], df[i,sem.col])
+  }
+  if (length(which(df[,new.col] %in% w)) > 0) {
+    df2 = df[-rev(which(df[,new.col] %in% w)),]
+  }
+  else {df2 = df}
+  return(df2)
+}
+
+
+AcP.biol.wo.withdrawn = rm.withdrawals(AcP.biol.df, 1, 22, 23)
+AcP.biom.wo.withdrawn = rm.withdrawals(AcP.biom.df, 1, 21, 22)
+
+#SubID.StudID.AcP.biol.wo.withdrawn = AcP.biol.wo.withdrawn[,c(2,1)]
+#SubID.StudID.AcP.biom.wo.withdrawn = AcP.biom.wo.withdrawn[,c(2,1)]
+
+SubID.master = c(AcP.biol.wo.withdrawn[,2], AcP.biom.wo.withdrawn[,2])
+#length(unique(SubID.master))
+
+df = AcP.biol.df
+#length(which(df[,2] %in% SubID.master))
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+AcP.biol.df = df.fixed
+
+df = AcP.biom.df
+#length(which(df[,2] %in% SubID.master))
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+AcP.biom.df = df.fixed
+
+```
+
+
+identifying students who repeated or did both courses  
+```{r}
+
+df = demog.df
+dup.studs = dup(df, 1, 1)
+dup.studs.df = df %>% filter(StudentID %in% dup.studs)
+dup.studs.tally = dup.studs.df %>% group_by(StudentID, course) %>% tally(sort = TRUE)
+
+table(dup.studs.tally$n)
+filter(dup.studs.tally, n >= 2) 
+
+studs.rep = filter(dup.studs.tally, n >= 2) 
+studs.rep.biol = as.data.frame(filter(studs.rep, course == "BIOL1040") %>% select(StudentID))
+studs.rep.biom = as.data.frame(filter(studs.rep, course == "BIOM2011") %>% select(StudentID))
+studs.both.courses = as.data.frame(filter(dup.studs.tally, n == 1) %>% select(StudentID))
+studs.both.courses = unique(studs.both.courses)
+
+```
+
+
+*removing remarks and withdrawn from FbP and FbU*   
+```{r}
+df = FbP.df
+#names(df)
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+FbP.df = df.fixed
+
+df = FbU.df
+#names(df)
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+FbU.df = df.fixed
+
+```
+
+
+
+
+#FbU transformations  
+```{r}
+
+```
+
+#AcP transformations  
+fixing marks for biol  
+```{r}
+df = AcP.biol.df
+head(df)
+df = df.mark.convert(df, 5, 16)
+
+missing = which(is.na(df[,18]))
+df[missing[1:5],c(5:16,18)]
+for (i in 1:length(missing))
+  df[missing[i],18] = round((sum(df[missing[i],5:16])/12),0)
+df[missing[1:5],c(5:16,18)]
+
+df = df.mark.convert(df, 18, 18)
+
+new.cols = c(length(df) + 1, length(df) + 2) 
+df[,new.cols] = 0
+df = rename(df, new.cols, c("Final.Grade.calc", "Final.Grade.percent"))
+
+table(df[,8])
+summary(df[,new.cols])
+
+for (i in 1:nrow(df)) {
+  if(df[i,21] == "BIOL1040Sem1Report 0") {
+    df[i,8] = as.numeric("")
+    df[i,new.cols[1]] = round((sum(df[i,c(5:7,9:16)])/11),0)
+    df[i,new.cols[2]] = round(((sum(df[i,c(5:7,9:16)])/44)*100),0)
+  }
+  else {
+    df[i,new.cols[1]] = round((sum(df[i,5:16])/12),0)
+    df[i,new.cols[2]] = round(((sum(df[i,5:16])/48)*100),0)
+  }
+}
+
+summary(df[,new.cols])
+
+AcP.biol.df = df
+
+```
+
+
+#FbP transformations  
+adding word count variable  
+```{r}
+
+df = FbP.df
+new.col = length(df) + 1
+df[,new.col] = 0
+df = rename(df, new.col, "WordCount")
+
+annot.type.col = 4
+annot.col = 11
+
+for (i in 1:nrow(df))
+  if (df[i,annot.type.col] == "Text")
+      df[i,new.col] = sapply(gregexpr("\\W+", df[i,annot.col]), length)
+
+#adding word count for audio annotations
+annot.col = 12
+
+for (i in 1:nrow(df))
+    if (df[i,annot.type.col] == "Recording")
+      df[i,new.col] = round(df[i,annot.col]*(164/60),0)
+
+#df[1:6,c(annot.col,annot.type.col,new.col)]
+
+FbP.df = df
+
+```
+
+
+#summarising  
+```{r}
+
+#AcP
+df = AcP.biol.df[,c(1:4, 26, 21:24)]
+df = rename(df, 5, "Final.Grade")
+AcP.df = rbind(df, AcP.biom.df[,c(1:4, 19:23)])
+
+#FbU
+open.dur = summarise(FbU.df, 15, 60000, 2, "OpenDuration.min")
+bins = c(0, 1, 60, 4600)
+df = open.dur
+df$open.bin = cut(df[,2], bins)
+df[1:5,]
+levels(df[,3]) = c("short", "medium", "long")
+table(df[,3])
+open.dur = df
+
+df = NULL
+df = merge(AcP.df, open.dur, by="SubmissionID", all.x=T, all.y=F)
+
+df[1:5,]
+col = 11
+#summary(df[,col])
+unopened = which(is.na(df[,col]))
+df[,col] = as.character(df[,col])
+df[unopened,col] = "unopened"
+df[,col] = as.factor(df[,col])
+
+AcP.open.bins = df
+
+#open.dur[1:5,]
+
+#FbP
+df = FbP.df
+df2 = table(df[,1], df[,4])
+df3 = as.data.frame(df2[,1])
+for (i in 2:ncol(df2))
+  df3 = cbind(df3, df2[,i])
+df3 = rename(df3, 1:4, colnames(df2))
+SubmissionID = rownames(df2)
+df3 = cbind(SubmissionID, df3)
+annot.num = df3
+annot.num[1:5,]
+
+audio.dur = summarise(FbP.df, 12, 60, 1, "auidio.min")
+
+annot.length.audio = summarise(subset(FbP.df, AnnotType == "Recording"), 18, 1, 1, "audio.words")
+annot.length.txt = summarise(subset(FbP.df, AnnotType == "Text"), 18, 1, 1, "txt.words")
+annot.length = summarise(FbP.df, 18, 1, 1, "total.words")
+
+audio.dur[1:5,]
+annot.length.audio[1:5,]
+annot.length.txt[1:5,]
+annot.length[1:5,]
+
+FbP.summary = merge(annot.num, annot.length, by="SubmissionID")
+FbP.summary = merge(FbP.summary, audio.dur, by="SubmissionID", all.x=T)
+FbP.summary = merge(FbP.summary, annot.length.audio, by="SubmissionID", all.x=T)
+FbP.summary = merge(FbP.summary, annot.length.txt, by="SubmissionID", all.x=T)
+
+FbP.summary[1:5,]
+FbP.summary[which(FbP.summary[,1] == 1486),]
+
+df = FbP.summary
+
+x = NULL
+for (i in 1:5)
+  x[i] = df$total.word[[i]]
+x
+
+length(which(is.na(df[,8])))
+#x = which(is.na(FbP.summary[,8]))
+
+
+#df[1:5,]
+col = 8
+#summary(df[,col])
+none = which(is.na(df[,col]))
+#df[,col] = as.character(df[,col])
+df[none,col] = 0
+
+col = 9
+none = which(is.na(df[,col]))
+df[none,col] = 0
+df[1:6,]
+
+str(df[,1])
+df[,1] = as.character(df[,1])
+df[,1] = as.numeric(df[,1])
+FbP.summary = df
+
+```
+
+
+
+writing  
+```{r}
+
+write.csv(demog.df, file="demog.csv", row.names=FALSE)
+
+write.csv(AcP.biol.df, file="AcPbioldf.csv", row.names=FALSE)
+write.csv(AcP.biom.df, file="AcPbiomdf.csv", row.names=FALSE)
+write.csv(AcP.df, file="AcPdf.csv", row.names=FALSE)
+write.csv(AcP.open.bins, file="AcPFbUbins.csv", row.names=FALSE)
+
+write.csv(FbP.df, file = "FbPdf.csv", row.names=FALSE)
+write.csv(FbP.summary, file = "FbPsummary.csv", row.names=FALSE)
+
+write.csv(FbU.df, file = "FbUdf.csv", row.names=FALSE)
+#write.csv(df, file = "FbUdfWOwithdrawals.csv", row.names=FALSE)
+
+write.csv(studs.withdrew, file = "withdrawals.csv", row.names=FALSE)
+write.csv(remarks.subID, file = "remarks.csv", row.names=FALSE)
+
+```
+
+
+
+

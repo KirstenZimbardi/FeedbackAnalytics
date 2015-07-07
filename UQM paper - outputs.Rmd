@@ -1,0 +1,108 @@
+---
+title: "UQM paper outputs"
+author: "KZ"
+date: "29 June 2015"
+output: html_document
+---
+  
+
+```{r, echo=FALSE, message=FALSE}
+#clean workspace
+rm(list=ls())
+
+#packages
+#require(RCurl)
+require(bitops)
+require(reshape2)
+require(dplyr)
+
+#load data
+demog = read.csv("demog.csv", header=TRUE, stringsAsFactors=FALSE)
+AcP.df = read.csv("AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+
+#load functions
+stats.mean.sem = function(df, dv, iv)
+{
+  means = tapply(df[,dv], df[,iv], mean, na.rm=T)
+  st.dev = tapply(df[,dv], df[,iv], sd, na.rm=T)
+  n = tapply(df[,dv], df[,iv], length)
+  SEM = st.dev/sqrt(n)
+  stats = as.data.frame(means)
+  stats = cbind(stats, SEM)
+  return(stats)
+}
+
+#Generalising
+gen = function(df, col.course, col.sem){
+  df[,col.course] = gsub("BIOL1040", "Level 1", df[,col.course])
+  df[,col.course] = gsub("BIOM2011", "Level 2", df[,col.course])
+  df[,col.sem] = gsub("Sem1", "Semester 1", df[,col.sem])
+  df[,col.sem] = gsub("Sem2", "Semester 2", df[,col.sem])
+  return(df)
+}
+
+demog = gen(demog, 13, 14)
+AcP.df = gen(AcP.df, 7, 8)
+
+
+```
+
+
+#Methods
+##Student cohort  
+```{r, echo=FALSE}
+df = subset(demog, Course.Grade !="withrawn")
+temp = df %>% group_by(course, sem) %>% tally()
+temp2 = as.data.frame(round(prop.table(table(df[,5])),2)*100)
+
+df[,4] = as.Date(df[,4], "%d/%M/%Y")
+sem1 = as.Date("2013-03-01")
+df2 = df %>% select(Date.of.Birth) %>% mutate(sem1 - Date.of.Birth)
+df2$age = as.numeric(df2[,2])%/%365
+#df2[1:10,]
+#table(df2[,3])
+bins = c(0, 16, 21, 60)
+df2$age.bin = cut(df2[,3], bins)
+#head(df2, n=20)
+temp3 = as.data.frame(round(prop.table(table(df2$age.bin)),2)*100)
+
+temp4 = as.data.frame(round(prop.table(table(df$International.Indicator.Code)),2)*100)
+#temp4 = as.data.frame(round(prop.table(table(df$International.Indicator.Code)),2)*100)
+#round(prop.table(table(df$UQ.Translated.Base.OP)),2)*100
+
+bin.op = c(0, 8, 20)
+
+temp5 = as.data.frame(round(prop.table(table(cut(df$UQ.Translated.Base.OP, bin.op))),2)*100)
+
+```
+
+
+During the period of this study, there were `r temp[1,3]` and `r temp[2,3]` students enrolled in the level 1 course, and `r temp[3,3]` and `r temp[3,3]` students enrolled in the level 2 course in 2013 Semesters 1 and 2, respectively. There were slightly more `r tolower(temp2[1,1])` (`r temp2[1,2]`%) than `r tolower(temp2[2,1])` (`r temp2[2,2]`%)  students, the vast majority (`r temp3[2,2]`%) were 17 – 21 years old, domestic students (`r temp4[1,2]`%), with high- to mid-range university entry scores (`r temp5[1,2]`%). 
+
+
+**_need to get program data to check the following:_**    
+Just over half (53%) of the students taking these courses were enrolled in a three-year Bachelor of Science (BSc) or four-year dual degree combining BSc with another degree, or the Bachelor of Biomedical Science (four year research-focused program). An additional 21% were enrolled in one of four sports science degrees, and 12% were enrolled in the combined BSc/Medical program (in which students undertake an accelerated two-year BSc program and then enter a four-year, graduate entry Medical program). The remaining students were enrolled in a large range of single and dual degrees (e.g. Arts, Engineering), specialty degrees and applied science degrees.  
+
+
+##Data collection and analysis  
+```{r, echo=FALSE}
+temp = length(unique(AcP.df$SubmissionID))
+```
+A total of `r temp` reports submitted and marked through FACS in semester 1 and 2, 2013 were used for this study. The modality, length (in time or number of words) and position of each feedback annotation provided on all reports was recorded, and the time taken to mark each collated. Clickstream data logs were collected as students accessed their marked documents, providing information on opening dates and durations, and student interaction with the feedback annotations. Data on student academic performance for each report were also collated. Throughout this study, quantitative analyses were performed using R 3.1.1 (R Development Core Team, Auckland, NZ). The results were expressed as mean and standard error of the mean (SEM), and were considered significant if p<0.05. 
+
+#Results and Discussion    
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+temp = dcast(AcP.df, course + sem ~ report)
+#temp
+df = subset(demog, Course.Grade !="withrawn")
+temp2 = as.data.frame(df %>% group_by(course) %>% tally())
+```
+
+The increasing availability of online technologies, which allow the provision of multimodal feedback annotations that can be generalised or situated, has certainly increased the variety and flexibility of feedback delivery options (refs). However, it has also increased the variability of feedback provision and changed the way in which students interact with feedback, leading to potentially greater variability in student outcomes (refs). The primary aims of this study were to understand how the different modalities of feedback available through online technologies affected feedback provisionboth across successive student assessment tasks and within large cohorts with multiple markers, and to examine the way students interacted with the feedback provided. Analyses of FACS data from laboratory reports submitted for assessment (Table 1) in two biomedical science courses in level 1 (n = `r temp2[1,2]` students) and level 2 (n = `r temp2[2,2]`), in Semesters 1 and 2, 2013, have shown that there are significant differences in the ways in which markers use the different modalities of feedback (Figure 2-4). In addition, the data demonstrates that there are substantial differences in the way students interact with their marked reports and feedback within them across the semesters (Figures 5-8).
+
+Table 1: Number of assignments processed through FACS  
+```{r, echo=FALSE}
+temp
+```
+NB Report 4 for the level 1 course in semester 2 was administered by another academic department which did not participate in the FACS trial.
+
