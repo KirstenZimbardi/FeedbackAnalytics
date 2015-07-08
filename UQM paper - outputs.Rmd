@@ -20,7 +20,7 @@ require(dplyr)
 #folder = "./Data Stage 2/"
 demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
 AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
-FbPsummary = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+FbPsummary = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 #load functions
