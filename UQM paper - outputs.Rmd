@@ -19,7 +19,9 @@ require(dplyr)
 #load data
 #folder = "./Data Stage 2/"
 demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
-AcP.df = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+FbPsummary = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+
 
 #load functions
 stats.mean.sem = function(df, dv, iv)
@@ -43,7 +45,7 @@ gen = function(df, col.course, col.sem){
 }
 
 demog = gen(demog, 13, 14)
-AcP.df = gen(AcP.df, 7, 8)
+AcP = gen(AcP, 7, 8)
 
 
 ```
@@ -87,13 +89,13 @@ Just over half (53%) of the students taking these courses were enrolled in a thr
 
 ##Data collection and analysis  
 ```{r, echo=FALSE}
-temp = length(unique(AcP.df$SubmissionID))
+temp = length(unique(AcP$SubmissionID))
 ```
 A total of `r temp` reports submitted and marked through FACS in semester 1 and 2, 2013 were used for this study. The modality, length (in time or number of words) and position of each feedback annotation provided on all reports was recorded, and the time taken to mark each collated. Clickstream data logs were collected as students accessed their marked documents, providing information on opening dates and durations, and student interaction with the feedback annotations. Data on student academic performance for each report were also collated. Throughout this study, quantitative analyses were performed using R 3.1.1 (R Development Core Team, Auckland, NZ). The results were expressed as mean and standard error of the mean (SEM), and were considered significant if p<0.05. 
 
 #Results and Discussion    
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-temp = dcast(AcP.df, course + sem ~ report)
+temp = dcast(AcP, course + sem ~ report)
 #temp
 df = subset(demog, Course.Grade !="withrawn")
 temp2 = as.data.frame(df %>% group_by(course) %>% tally())
@@ -107,3 +109,12 @@ temp
 ```
 NB Report 4 for the level 1 course in semester 2 was administered by another academic department which did not participate in the FACS trial.
 
+
+
+Figure 2 Box plots of the number of audio and text feedback provision annotations for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of audio annotations per report across two semesters of level 1 and 2 subjects; B) Average number of text annotations per report across two semesters of level 1 and 2 subjects.
+
+
+Figure 3: Box plots of audio and text feedback provision for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of words in audio annotation in reports across two semesters and levels; B) Average length of text annotations in reports across two semesters and two levels.
+
+
+Figure 4 Box plots of overall amount of feedback for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330); Show is the A) Overall number of words within audio feedback per reports; B) Overall amount of text annotations per report across two semesters of level 1 and 2 subjects
