@@ -20,7 +20,7 @@ require(dplyr)
 #folder = "./Data Stage 2/"
 demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
 AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
-FbPsummary = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
+FbPsum = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 #load functions
@@ -46,7 +46,11 @@ gen = function(df, col.course, col.sem){
 
 demog = gen(demog, 13, 14)
 AcP = gen(AcP, 7, 8)
-
+#FbPsum does not inlude project details, need to merge in from AcP
+#FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
+#FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
+#ignoring this for now and just generating Fig 2-4 based on data that is in FbPsummary.csv
+FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
 
 ```
 
