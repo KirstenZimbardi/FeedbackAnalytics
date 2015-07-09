@@ -140,15 +140,16 @@ legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fi
 ```{r, echo=FALSE}
 
 default.plot()
-par(oma = c(0, 0, 1.5, 0))
+par(oma = c(0, 0, 1.0, 0))
+par(mfrow=c(1,2))
+par(mar = c(4.5, 4.1, 2.1, 1.5))
 
-FbP.AcP[1:5,4]
-
-plot.mean.sem(FbP.AcP, 4, 14, 30, )
+plot.mean.sem(FbP.AcP, 4, 14, 20, report.col, report.names)
+plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names)
 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = sem.col, bty="n")
+legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
 
 
 ```
