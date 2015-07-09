@@ -144,8 +144,8 @@ par(oma = c(0, 0, 1.0, 0))
 par(mfrow=c(1,2))
 par(mar = c(4.5, 4.1, 2.1, 1.5))
 
-plot.mean.sem(FbP.AcP, 4, 14, 20, report.col, report.names)
-plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names)
+plot.mean.sem(FbP.AcP, 4, 14, 20, report.col, report.names, "Number of audio annotations per report")
+plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names, "Number of text annotations per report")
 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
@@ -154,7 +154,7 @@ legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fi
 
 ```
 
-Figure 2 Box plots of the number of audio and text feedback provision annotations for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of audio annotations per report across two semesters of level 1 and 2 subjects; B) Average number of text annotations per report across two semesters of level 1 and 2 subjects.
+Figure 2 Mean+/-SEM  number of audio and text annotations for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of audio annotations per report across two semesters of level 1 and 2 subjects; B) Average number of text annotations per report across two semesters of level 1 and 2 subjects.
 
   
 ```{r, echo=FALSE}

@@ -161,21 +161,7 @@ dep.variables = function()
 
 #graphing functions
 
-graphs = function(...)
-{
-  report.names = NULL
-  for (i in 1:length(project.names))
-    report.names[i] = substr(project.names[i], 13,20)
-  report.names <<- report.names
-  
-  kz.col = c("cyan1", "chartreuse", "yellow", "darkorange")
-  kz.col <<-  kz.col
-  report.col = c(rep.int("cyan1", 4), rep.int("chartreuse", 3), rep.int("yellow", 2), rep.int("darkorange", 2))
-  report.col <<- report.col
-  
-  sem.names = c("Level 1 Sem 1", "Level 1 Sem 2", "Level 2 Sem 1", "Level 2 Sem 2")
-  sem.names <<- sem.names
-}
+
 
 
 default.plot <- function()
@@ -211,14 +197,14 @@ legend.top = function(leg.names, bar.col)
   legend("top", legend = leg.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = bar.col, bty="n")
 }
 
-plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names)
+plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names, y.name)
 {
   means = tapply(df[,dv], df[,iv], mean, na.rm=T)
   st.dev = tapply(df[,dv], df[,iv], sd, na.rm=T)
   n = tapply(df[,dv], df[,iv], length)
   sem = st.dev/sqrt(n)
   
-  bars <- barplot(means, names = "", ylim = c(0,y.max), col = bar.col)
+  bars <- barplot(means, names = "", ylab = y.name, ylim = c(0,y.max), col = bar.col)
   for (i in 1:length(bars)) 
   {
     arrows(bars[i],means[i],bars[i],means[i]+sem[i],angle=90,length=.125,lwd = 1.5)
