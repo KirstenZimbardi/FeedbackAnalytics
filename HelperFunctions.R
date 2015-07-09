@@ -197,6 +197,14 @@ legend.top = function(leg.names, bar.col)
   legend("top", legend = leg.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = bar.col, bty="n")
 }
 
+plot.topper.dual = function()
+{
+  default.plot()
+  par(oma = c(0, 0, 1.0, 0))
+  par(mfrow=c(1,2))
+  par(mar = c(4.5, 4.1, 2.1, 1.5))
+}
+
 plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names, y.name)
 {
   means = tapply(df[,dv], df[,iv], mean, na.rm=T)
