@@ -56,7 +56,6 @@ dup = function(df, col.dup, col.return) {
 #load data
 ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
 projects()
-graphs()
 
 #AcP = Ac.performance(project.num, project.names) #creates a list called AcP for the 11 reports
 AcP.biol = Ac.performance(project.num[1:7], project.names.formative[1:7], "biol")
