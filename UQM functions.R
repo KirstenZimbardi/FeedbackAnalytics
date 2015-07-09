@@ -16,8 +16,8 @@ projects = function(...)
 graphs = function(...)
 {
   report.names = NULL
-  for (i in 1:length(project.names))
-    report.names[i] = substr(project.names[i], 13,20)
+  for (i in 1:length(project.names.formative))
+    report.names[i] = substr(project.names.formative[i], 13,20)
   report.names <<- report.names
   
   kz.col = c("cyan1", "chartreuse", "yellow", "darkorange")

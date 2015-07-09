@@ -207,8 +207,8 @@ plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names, y.name)
   bars <- barplot(means, names = "", ylab = y.name, ylim = c(0,y.max), col = bar.col)
   for (i in 1:length(bars)) 
   {
-    arrows(bars[i],means[i],bars[i],means[i]+sem[i],angle=90,length=.125,lwd = 1.5)
-    arrows(bars[i],means[i],bars[i],means[i]-sem[i],angle=90,length=.125,lwd = 1.5)
+    arrows(bars[i],means[i],bars[i],means[i]+sem[i],angle=90,length=.09,lwd = 1.5)
+    arrows(bars[i],means[i],bars[i],means[i]-sem[i],angle=90,length=.09,lwd = 1.5)
   }
   axis(1, at = bars, labels = x.names, las = 2)
 }

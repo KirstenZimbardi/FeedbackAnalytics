@@ -121,23 +121,7 @@ temp
 NB Report 4 for the level 1 course in semester 2 was administered by another academic department which did not participate in the FACS trial.
 
 
-##Number of annotations per report
-  
-```{r, echo=FALSE}
-#first plot with legend at top
-default.plot()
-par(oma = c(0, 0, 1.5, 0))
-
-uqm.plot1(ls1=ls.annot.audio, main1="Number of audio annotations", ylab1="annotations per report", ls2=ls.annot.text, main2="Number of text annotations",  ylab2="annotations per report")
-
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = sem.col, bty="n")
-
-```
-
-  
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 default.plot()
 par(oma = c(0, 0, 1.0, 0))
@@ -151,10 +135,11 @@ par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
 legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
 
+temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
 ```
 
-Figure 2 Mean+/-SEM  number of audio and text annotations for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of audio annotations per report across two semesters of level 1 and 2 subjects; B) Average number of text annotations per report across two semesters of level 1 and 2 subjects.
+Figure 2: Number of audio and text annotations for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A)  Mean+/-SEM number of audio annotations per report across two semesters of level 1 and 2 subjects; B)  Mean+/-SEM number of text annotations per report across two semesters of level 1 and 2 subjects.
 
   
 ```{r, echo=FALSE}
