@@ -214,7 +214,7 @@ plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names, y.name)
 }
 
 
-plot.mean.sem.adj = function(df, dv, iv, y.max, bar.col, x.names, adjustor)
+plot.mean.sem.adj = function(df, dv, iv, y.max, bar.col, x.names, y.name, adjustor)
 {
   means = tapply(df[,dv], df[,iv], mean, na.rm=T)
   means = means/adjustor
@@ -223,7 +223,7 @@ plot.mean.sem.adj = function(df, dv, iv, y.max, bar.col, x.names, adjustor)
   sem = st.dev/sqrt(n)
   sem = sem/adjustor
   
-  bars <- barplot(means, names = "", ylim = c(0,y.max), col = bar.col)
+  bars <- barplot(means, names = "", ylab = y.name, ylim = c(0,y.max), col = bar.col)
   for (i in 1:length(bars)) 
   {
     arrows(bars[i],means[i],bars[i],means[i]+sem[i],angle=90,length=.125,lwd = 1.5)
