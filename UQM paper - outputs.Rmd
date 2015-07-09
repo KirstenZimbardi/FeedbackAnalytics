@@ -203,28 +203,26 @@ Figure 4: Total amount of feedback provided in audio and text feedback for level
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
-looked = 
-  
-  addmargins(prop.table(table(AcPFbUbins[,6], AcPFbUbins[,11]),1))
+looked = as.data.frame(addmargins(prop.table(table(AcPFbUbins[,6], AcPFbUbins[,11]),1)))
+looked = round(100-(looked[37:47,3]*100),2)
+#looked
+
 
 default.plot()
-par(oma = c(0, 0, 1.0, 0))
-par(mfrow=c(1,2))
-par(mar = c(4.5, 4.1, 2.1, 1.5))
 
-barplot(looked, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Number of Students (% of cohort)", main = "Proportion of students who \nlooked at their feedback for each report")
-
+barplot(looked, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Number of Students (% of cohort)")
 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
 legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
 
-temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
+temp = as.data.frame(table(AcP[,6]))
+
 
 ```
 
 
-Figure 5 The proportion of students who looked at feedback. Shown are the proportions of students who viewed their report feedback of level one (BIOL 1040 Sem1:  4 reports, Sem2:  3 reports) and level two (BIOM 2011 Sem1 and Sem2: 2 Reports) courses across two semesters. Report 1 of BIOL1040 Sem1 was a formative submission while the subsequent reports were all summative. . Data are expressed as the cohort average
+Figure 5: The proportion of students who looked at their feedback (shown as the proportion of students who received feedback in each cohort). Number of students in each cohort: Level one semester 1: n=`r temp[1,2]`; Level one semester 2: n=`r temp[5,2]`; Level two semester 1: n=`r temp[8,2]`; Level two semester 2: n=`r temp[10,2]`. 
 
 
 Figure 6 The duration students had their report feedback open. Shown is the overall duration (minutes) that students had their report feedback open in level one (BIOL 1040 Sem1:  4 reports, Sem2:  3 reports) and level two (BIOM 2011 Sem1 and Sem2: 2 Reports) courses. Data are expressed as the cohort average + SEM.
