@@ -135,9 +135,7 @@ par(mar = c(4.5, 4.1, 2.1, 1.5))
 plot.mean.sem(FbP.AcP, 4, 14, 20, report.col, report.names, "Number of audio annotations per report")
 plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names, "Number of text annotations per report")
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
@@ -159,9 +157,7 @@ par(mar = c(4.5, 4.9, 2.1, 1.5))
 plot.mean.sem(audio, 18, 14, 170, report.col, report.names, "Number of words per audio annotation \n per report")
 plot.mean.sem(text, 18, 14, 17, report.col, report.names, "Number of words per text annotation \n per report")
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
@@ -188,9 +184,7 @@ par(mar = c(4.5, 4.1, 2.1, 1.5))
 plot.mean.sem(FbP.AcP, 8, 14, 1700, report.col, report.names, "Number of words in audio annotations per report")
 plot.mean.sem(FbP.AcP, 9, 14, 170, report.col, report.names, "Number of words in text annotations per report")
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
@@ -211,9 +205,7 @@ default.plot()
 
 barplot(looked, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Number of Students (% of cohort)", axis.lty=1.0)
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+legend.top(sem.names,  kz.col)
 
 
 temp = as.data.frame(table(AcP[,6]))
@@ -229,13 +221,8 @@ Figure 5: The proportion of students who looked at their feedback (shown as the 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 default.plot()
-
 plot.mean.sem.adj(AcPFbUbins, 10, 6, 8, report.col, report.names, "Open duration (hours)", 60)
-
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
-
+legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(AcPFbUbins[,7], AcPFbUbins[,9]))
 
@@ -270,6 +257,37 @@ temp = as.data.frame(table(AcPFbUbins[,6]))
 ```
 
 Figure 7: The number of students who had their feedback open for various durations following the level one semester one course A) formative report (Report 0: n=`r temp[1,2]`), and B) final report (Report 3: n=`r temp[4,2]`), and the level two semester one course C) first report (Report 1: n=`r temp[8,2]`), and C) final report (Report 2: n=`r temp[9,2]`). Data are presented as a frequency histogram showing the number of student across the log transformed open duration. 
+
+
+```{r, echo=FALSE, fig.width=12, fig.height=5}
+
+default.plot()
+plot.mean.sem.adj(FbU, 15, 21, 4, report.col, report.names, 60000)
+title(main = "Pause durations for all reports")
+title(ylab = "Pause duration (min)")
+legend.top(sem.names,  kz.col)
+
+x = my.logs(-4, 9, 4, 10)
+p = project.names.formative[c(1,4,8,9)]
+
+default.plot()
+par(mfrow=c(1,2))
+
+for(i in 1:2) { 
+  hist(log(subset(AcPFbUbins, project == p[i])[,10]), main = "", ylab = "Number of students", xlab = "Open duration (log scale)", xlim=c(-4,9),  ylim=c(0, 200), axes=F)
+axis(1, at=seq(-4, 9, 1), labels = x)
+axis(2)
+}
+for(i in 3:4) {
+  hist(log(subset(AcPFbUbins, project == p[i])[,10]), main = "", ylab = "Number of students", xlab = "Open duration (log scale)", xlim=c(-4,9),  ylim=c(0, 50), axes=F)
+axis(1, at=seq(-4, 9, 1), labels = x)
+axis(2)
+}
+
+
+temp = as.data.frame(table(AcPFbUbins[,6]))
+
+```
 
 
 Figure 8 Pause duration between clicks whilst perusing feedback. Bar graph of the time interval between clicks while students look through assessment feedback for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330); Significance was found between non-final (BIOL1040Sem1: Reports 1-3, BIOL1040Sem: Reports 1and 2, BIOM2011Sem1: Report 1, BIOM2011Sem2: Report 1) and final reports (BIOL1040Sem1: Report 4, BIOL1040Sem: Report3, BIOM2011Sem1: Report 2, BIOM2011Sem2: Report 2). 
