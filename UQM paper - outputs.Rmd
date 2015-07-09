@@ -21,6 +21,7 @@ require(dplyr)
 demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
 AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
 FbPsum = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
+FbP = read.csv("./Data Stage 2/FbPdf.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 #load functions
@@ -121,6 +122,7 @@ temp
 NB Report 4 for the level 1 course in semester 2 was administered by another academic department which did not participate in the FACS trial.
 
 
+
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 default.plot()
@@ -141,16 +143,47 @@ temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
 Figure 2: Number of audio and text annotations for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A)  Mean+/-SEM number of audio annotations per report across two semesters of level 1 and 2 subjects; B)  Mean+/-SEM number of text annotations per report across two semesters of level 1 and 2 subjects.
 
-  
-```{r, echo=FALSE}
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+audio = subset(FbP, AnnotType == "Recording")
+text = subset(FbP, AnnotType == "Text")
+
+default.plot()
+par(oma = c(0, 1.0, 1.0, 0))
+par(mfrow=c(1,2))
+par(mar = c(4.5, 4.9, 2.1, 1.5))
+
+plot.mean.sem(audio, 18, 14, 170, report.col, report.names, "Number of words per audio annotation \n per report")
+plot.mean.sem(text, 18, 14, 17, report.col, report.names, "Number of words per text annotation \n per report")
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+
+temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
 ```
 
-Figure 3: Box plots of audio and text feedback provision for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330). Shown is the A) Average number of words in audio annotation in reports across two semesters and levels; B) Average length of text annotations in reports across two semesters and two levels.
+Figure 3: Number of words provided in each audio and text annotation for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) Mean+/-SEM number of words in each audio annotation in reports across two semesters and levels; B) Mean+/-SEM number of words in each text annotation in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
 
-  
-```{r, echo=FALSE}
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+default.plot()
+par(oma = c(0, 0, 1.0, 0))
+par(mfrow=c(1,2))
+par(mar = c(4.5, 4.1, 2.1, 1.5))
+
+plot.mean.sem(FbP.AcP, 8, 14, 1700, report.col, report.names, "Number of words in audio annotations per report")
+plot.mean.sem(FbP.AcP, 9, 14, 170, report.col, report.names, "Number of words in text annotations per report")
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+
+temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
 ```
 
-Figure 4 Box plots of overall amount of feedback for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330); Show is the A) Overall number of words within audio feedback per reports; B) Overall amount of text annotations per report across two semesters of level 1 and 2 subjects
+Figure 4: Total amount of feedback provided in audio and text feedback for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) Mean+/-SEM number of words in audio annotations in reports across two semesters and levels; B) Mean+/-SEM number of words in text annotations in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
