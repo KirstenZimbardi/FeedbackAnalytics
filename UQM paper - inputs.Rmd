@@ -21,7 +21,7 @@ require(dplyr)
 #functions
 source("Functions to load UQM data.R")
 source("HelperFunctions.R")
-source("MyLogs.R")
+#source("MyLogs.R")
 
 ls.dim = function(ls)
   {
@@ -577,21 +577,21 @@ FbP.summary = df
 writing  
 ```{r}
 
-write.csv(demog.df, file="demog.csv", row.names=FALSE)
+folder = "./Data Stage 2/"
+write.csv(demog.df, file=paste0(folder, "demog.csv"), row.names=FALSE)
 
-write.csv(AcP.biol.df, file="AcPbioldf.csv", row.names=FALSE)
-write.csv(AcP.biom.df, file="AcPbiomdf.csv", row.names=FALSE)
-write.csv(AcP.df, file="AcPdf.csv", row.names=FALSE)
-write.csv(AcP.open.bins, file="AcPFbUbins.csv", row.names=FALSE)
+write.csv(AcP.biol.df, file=paste0(folder, "AcPbioldf.csv"), row.names=FALSE)
+write.csv(AcP.biom.df, file=paste0(folder, "AcPbiomdf.csv"), row.names=FALSE)
+write.csv(AcP.df, file=paste0(folder, "AcPdf.csv"), row.names=FALSE)
+write.csv(AcP.open.bins, file=paste0(folder, "AcPFbUbins.csv"), row.names=FALSE)
 
-write.csv(FbP.df, file = "FbPdf.csv", row.names=FALSE)
-write.csv(FbP.summary, file = "FbPsummary.csv", row.names=FALSE)
+write.csv(FbP.df, file=paste0(folder, "FbPdf.csv"), row.names=FALSE)
+write.csv(FbP.summary, file=paste0(folder, "FbPsummary.csv"), row.names=FALSE)
 
-write.csv(FbU.df, file = "FbUdf.csv", row.names=FALSE)
-#write.csv(df, file = "FbUdfWOwithdrawals.csv", row.names=FALSE)
+write.csv(FbU.df, file=paste0(folder, "FbUdf.csv"), row.names=FALSE)
 
-write.csv(studs.withdrew, file = "withdrawals.csv", row.names=FALSE)
-write.csv(remarks.subID, file = "remarks.csv", row.names=FALSE)
+write.csv(studs.withdrew, file=paste0(folder, "withdrawals.csv"), row.names=FALSE)
+write.csv(remarks.subID, file=paste0(folder, "remarks.csv"), row.names=FALSE)
 
 ```
 
