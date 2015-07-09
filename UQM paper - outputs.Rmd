@@ -22,6 +22,8 @@ demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE
 AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
 FbPsum = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
 FbP = read.csv("./Data Stage 2/FbPdf.csv", header=TRUE, stringsAsFactors=FALSE)
+FbU = read.csv("./Data Stage 2/FbUdf.csv", header=TRUE, stringsAsFactors=FALSE)
+AcPFbUbins = read.csv("./Data Stage 2/AcPFbUbins.csv", header=TRUE, stringsAsFactors=FALSE)
 
 
 #load functions
@@ -163,6 +165,14 @@ legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fi
 
 temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 
+#Kay wanted range of audio durations (sec) for later text
+#temp3 = as.data.frame(tapply(FbP[,12], FbP[,14], mean, na.rm=T))
+#temp4 = NULL
+#for(i in 1:11)
+#  temp4[[i]] = se(subset(FbP, project == project.names.formative[i]), 12)
+#temp3
+#temp4  
+  
 ```
 
 Figure 3: Number of words provided in each audio and text annotation for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) Mean+/-SEM number of words in each audio annotation in reports across two semesters and levels; B) Mean+/-SEM number of words in each text annotation in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
@@ -187,3 +197,42 @@ temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 ```
 
 Figure 4: Total amount of feedback provided in audio and text feedback for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]` and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) Mean+/-SEM number of words in audio annotations in reports across two semesters and levels; B) Mean+/-SEM number of words in text annotations in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
+
+
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+looked = 
+  
+  addmargins(prop.table(table(AcPFbUbins[,6], AcPFbUbins[,11]),1))
+
+default.plot()
+par(oma = c(0, 0, 1.0, 0))
+par(mfrow=c(1,2))
+par(mar = c(4.5, 4.1, 2.1, 1.5))
+
+barplot(looked, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Number of Students (% of cohort)", main = "Proportion of students who \nlooked at their feedback for each report")
+
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", legend = sem.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = kz.col, bty="n")
+
+temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
+
+```
+
+
+Figure 5 The proportion of students who looked at feedback. Shown are the proportions of students who viewed their report feedback of level one (BIOL 1040 Sem1:  4 reports, Sem2:  3 reports) and level two (BIOM 2011 Sem1 and Sem2: 2 Reports) courses across two semesters. Report 1 of BIOL1040 Sem1 was a formative submission while the subsequent reports were all summative. . Data are expressed as the cohort average
+
+
+Figure 6 The duration students had their report feedback open. Shown is the overall duration (minutes) that students had their report feedback open in level one (BIOL 1040 Sem1:  4 reports, Sem2:  3 reports) and level two (BIOM 2011 Sem1 and Sem2: 2 Reports) courses. Data are expressed as the cohort average + SEM.
+
+
+Figure 7 Number of students and their feedback access duration in level one (BIOL1040) semester one course. Shown is the log transformed sample duration of student access to their feedback in A) BIOL1040 semester 1, report 1, B) BIOL1040 semester 1, report 4, C) BIOM2011 semester 1, report 1; D) BIOM2011 semester 1, report 2. 
+
+
+Figure 8 Pause duration between clicks whilst perusing feedback. Bar graph of the time interval between clicks while students look through assessment feedback for level 1 course (Report 1: n=1576, Report 2: n=1634, Report 3: n=1604, Report 4: n=707 and for the level 2 course (Report 1: n=333, Report 2: n=330); Significance was found between non-final (BIOL1040Sem1: Reports 1-3, BIOL1040Sem: Reports 1and 2, BIOM2011Sem1: Report 1, BIOM2011Sem2: Report 1) and final reports (BIOL1040Sem1: Report 4, BIOL1040Sem: Report3, BIOM2011Sem1: Report 2, BIOM2011Sem2: Report 2). 
+
+
