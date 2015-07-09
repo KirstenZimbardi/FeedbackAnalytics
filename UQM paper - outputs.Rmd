@@ -276,3 +276,38 @@ temp = as.data.frame(table(AcP[,7], AcP[,9]))
 
 
 Figure 9: Overall final mark for reports in the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM mark that students achieved for each report, as a percentage.
+
+
+```{r, echo=FALSE}
+#proportion of audio played
+FbP.audio = subset(FbP, AnnotType == "Recording")
+#NB found error - 45 audio files have NA for duration
+#FbP.audio[(which(is.na(FbP.audio$Duration.sec))),]
+FbP.audio = FbP.audio[,c(1,2,5,10,12,14:18)]
+
+FbU.audio = subset(FbU, Interaction == "Audio")
+FbU.audio$Filename = gsub(".mp3", ".m4a", FbU.audio$Filename)
+FbU.audio = FbU.audio[,c(1:2,10,12,16:20)]
+
+FbP.FbU.audio = merge(FbP.audio, FbU.audio, by="Filename", all.x=T)
+
+#surprisingly 2 of the NA duration audio were scrubbed and paused see EventID 123877, 123931, 123932
+#FbP.FbU.audio[(which(is.na(FbP.FbU.audio$Duration.sec))),]
+
+FbP.FbU.audio = remover(FbP.FbU.audio, 5)
+FbP.FbU.audio = rename(FbP.FbU.audio, 2, "SubmissionID")
+FbP.FbU.audio.openbins = merge(FbP.FbU.audio, AcPFbUbins[,c(1,5,10,11)], by="SubmissionID")
+FbP.FbU.audio.opened = subset(FbP.FbU.audio.openbins, open.bin !="unopened")
+
+b = with(FbP.FbU.audio.opened, table(SubmissionID, Filename))
+
+with(FbP.FbU.audio.opened, table(report, State))
+with(FbP.FbU.audio.opened, addmargins(table(State)))
+FbP.FbU.audio.opened[1:5,]
+FbP.FbU.audio[1:5,]
+with(FbP.FbU.audio, addmargins(table(State)))
+m = FbP.FbU.audio[(which(is.na(FbP.FbU.audio$State))),]
+m[seq(1,15000,500),]
+```
+
+
