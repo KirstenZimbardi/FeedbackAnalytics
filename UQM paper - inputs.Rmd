@@ -20,8 +20,8 @@ require(dplyr)
 
 #functions
 source("Functions to load UQM data.R")
+source("UQM functions.R")
 source("HelperFunctions.R")
-#source("MyLogs.R")
 
 ls.dim = function(ls)
   {
