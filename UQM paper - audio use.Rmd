@@ -1,0 +1,29 @@
+---
+title: "UQM paper - audio use"
+author: "KZ"
+date: "10 July 2015"
+output: html_document
+---
+
+
+```{r}
+names(audio.use)
+
+#number of submissions
+a = unique(audio.use[,c(4,11,13)])
+dcast(a, course ~ report)
+
+#number of audio annotations
+a = unique(audio.use[,c(1,4,11,13)])
+dcast(a, course ~ report)
+
+#number of audio in each state for each course and report
+a = audio.use[,c(11,13,2,3)]
+acast(a, course ~ report ~ State, sum)
+
+#this gives the same result
+with(FbP.FbU.audio, addmargins(table(project, State)))
+
+
+```
+

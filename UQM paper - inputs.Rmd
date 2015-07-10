@@ -365,6 +365,7 @@ AcP.biom.df = df.fixed
 
 
 identifying students who repeated or did both courses  
+(doesn't change corpus, just identifies students in case of duplication problems later)  
 ```{r}
 
 df = demog.df
@@ -399,11 +400,53 @@ FbU.df = df.fixed
 ```
 
 
+##FbP errors  
+found audio annotations where Duration.sec was NA ie did not upload to server from iPad properly  
+```{r}
+#NB found error - 45 audio files have NA for duration
+FbP.audio.missing = subset(FbP.df, AnnotType == "Recording" & is.na(Duration.sec))
+r = rownames(FbP.audio.missing)
+FbP.audio.missing[r[1:3],]
+FbP.df[r[1:3],]
+r = as.numeric(r)
+df = FbP.df[-r,]
+#check to see correct rows removed
+subset(df, AnnotType == "Recording" & is.na(Duration.sec)) 
+
+FbP.df = df
+```
 
 
-#FbU transformations  
+found duplicates for all columns in FbP.df
 ```{r}
 
+dups = which(duplicated(FbP.df))
+df = FbP.df[-dups,]
+nrow(FbP.df) - nrow(df)
+length(dups)
+which(duplicated(df)) #check
+FbP.df = df
+
+#checking other data sets
+dups = which(duplicated(FbU.df))
+length(dups)
+
+dups = which(duplicated(AcP.biol.df))
+length(dups)
+
+dups = which(duplicated(AcP.biom.df))
+length(dups)
+
+```
+
+#FbU transformations  
+changing audio filenames to match FbP  
+```{r}
+df = FbU.df
+df$Filename[1:5]
+df$Filename = gsub(".mp3", ".m4a", df$Filename)
+df$Filename[1:5]
+FbU.df = df
 ```
 
 #AcP transformations  
@@ -477,15 +520,22 @@ FbP.df = df
 ```
 
 
+
 #summarising  
+#AcP  
+combining biol and biom  
 ```{r}
 
-#AcP
 df = AcP.biol.df[,c(1:4, 26, 21:24)]
 df = rename(df, 5, "Final.Grade")
 AcP.df = rbind(df, AcP.biom.df[,c(1:4, 19:23)])
 
-#FbU
+```
+
+
+#FbU  
+open duration and bins, and merging w AcP  
+```{r}
 open.dur = summarise(FbU.df, 15, 60000, 2, "OpenDuration.min")
 bins = c(0, 1, 60, 4600)
 df = open.dur
@@ -509,8 +559,11 @@ df[,col] = as.factor(df[,col])
 AcP.open.bins = df
 
 #open.dur[1:5,]
+```
 
-#FbP
+#FbP  
+sum of annotations per submission ID  
+```{r}
 df = FbP.df
 df2 = table(df[,1], df[,4])
 df3 = as.data.frame(df2[,1])
@@ -541,6 +594,11 @@ FbP.summary = merge(FbP.summary, annot.length.txt, by="SubmissionID", all.x=T)
 FbP.summary[1:5,]
 FbP.summary[which(FbP.summary[,1] == 1486),]
 
+```
+
+FbP.summary fix?  
+*not sure what this is...*  
+```{r}
 df = FbP.summary
 
 x = NULL
@@ -572,6 +630,118 @@ FbP.summary = df
 ```
 
 
+merging audio provision with audio use
+```{r}
+#working out which variables are important in finding duplicates
+#including x and y locations (ie some annotations might be used more than once on a page)
+FbP.audio = subset(FbP.df, AnnotType == "Recording")
+which(duplicated(FbP.df))
+which(duplicated(FbP.audio))
+FbP.audio = FbP.audio[,c(1,2,5:7,10,12,14:17)]
+which(duplicated(FbP.audio))
+df = FbP.audio[which(duplicated(FbP.audio)), 6]
+length(df)
+df2 = FbP.audio %>% filter(Filename %in% df)
+nrow(df2)
+df3 = FbP.df %>% filter(Filename %in% df)
+nrow(df3)
+df4 = FbU.df %>% filter(Filename %in% df)
+nrow(df4)
+
+#but can't work out if student played both or 1 annot twice eg
+FbP.df[which(FbP.df[,10] == df[1]),]
+FbU.df[which(FbU.df[,20] == df[1]),]
+#and this presents issues later for merge, so need to remove all duplicate filenames
+
+#missing x and y locations
+FbP.audio = subset(FbP.df, AnnotType == "Recording")
+which(duplicated(FbP.df))
+which(duplicated(FbP.audio))
+FbP.audio = FbP.audio[,c(1,2,5,10,12,14:17)]
+which(duplicated(FbP.audio))
+df = dup(FbP.audio, 4, 4)
+length(df)
+df2 = FbP.audio %>% filter(Filename %in% df)
+nrow(df2)
+df3 = FbP.df %>% filter(Filename %in% df)
+nrow(df3)
+df4 = FbU.df %>% filter(Filename %in% df)
+nrow(df4)
+
+
+#removing the duplicated audio filenames - will still see if then filename was used by students
+df.fixed = FbP.df
+for (i in 1:length(df))
+  df.fixed = df.fixed[-(which(df.fixed$Filename == df[i])),]
+nrow(FbP.df)
+nrow(df.fixed)
+nrow(FbP.df) - nrow(df.fixed)
+FbP.df = df.fixed
+
+FbP.audio = subset(FbP.df, AnnotType == "Recording")
+FbP.audio = FbP.audio[,c(1,2,5:7,10,12,14:17)]
+which(duplicated(FbP.audio)) #check
+
+FbU.audio = subset(FbU.df, Interaction == "Audio")
+FbU.audio = FbU.audio[,c(1,10,16:20)]
+which(duplicated(FbU.audio)) #check
+
+nrow(FbP.audio)
+nrow(FbU.audio)
+FbP.FbU.audio = merge(FbP.audio, FbU.audio, by="Filename", all.x=T)
+#nrow(FbP.FbU.audio)
+#length(unique(FbP.FbU.audio$EventID))
+#summary(FbP.FbU.audio)
+#checkig if all EventIDs are unique - need to remove NAs
+df2 = remover(FbP.FbU.audio, 12)
+nrow(df2)
+length(unique(df2$EventID))
+length(which(duplicated(df2$EventID)))
+
+#adding category for FbP audio that were unused in FbU
+unused = which(is.na(FbP.FbU.audio$EventID))
+unused.filename = FbP.FbU.audio[unused,1]
+u = unused.filename[1:10]
+FbP.audio %>% filter(Filename %in% u)
+
+df = FbP.FbU.audio
+df[unused,13] = "unused"
+summary(df)
+df[1:20,]
+addmargins(table(df[,13]))
+
+nrow(df)
+
+FbP.FbU.audio = df
+
+with(FbP.FbU.audio, addmargins(table(project, State)))
+with(FbP.FbU.audio, addmargins(prop.table(table(project, State),1)))
+
+audio.use = as.data.frame(table(FbP.FbU.audio$Filename, FbP.FbU.audio$State))
+audio.use[1:5,]
+names(audio.use) = c("Filename", "State", "Freq")
+
+audio.files = FbP.FbU.audio[,c(1:11)]
+audio.files = unique(audio.files)
+which(duplicated(audio.files$Filename))
+nrow(audio.use)
+nrow(audio.files)
+audio.use = merge(audio.use, audio.files, by="Filename")
+nrow(audio.use)
+
+audio.use[1:5,]
+length(unique(audio.use$SubmissionID))
+length(unique(audio.use$Filename))
+
+audio.use[which(audio.use$SubmissionID == 1486),]
+length(which(audio.use$SubmissionID == 1486))
+length(unique(audio.use[which(audio.use$SubmissionID == 1486),1]))
+
+#FbP.summary[which(FbP.summary$SubmissionID == 1486),]
+
+```
+
+
 
 writing  
 ```{r}
@@ -588,6 +758,8 @@ write.csv(FbP.df, file=paste0(folder, "FbPdf.csv"), row.names=FALSE)
 write.csv(FbP.summary, file=paste0(folder, "FbPsummary.csv"), row.names=FALSE)
 
 write.csv(FbU.df, file=paste0(folder, "FbUdf.csv"), row.names=FALSE)
+
+write.csv(audio.use, file=paste0(folder, "AudioUse.csv"), row.names=TRUE)
 
 write.csv(studs.withdrew, file=paste0(folder, "withdrawals.csv"), row.names=FALSE)
 write.csv(remarks.subID, file=paste0(folder, "remarks.csv"), row.names=FALSE)
