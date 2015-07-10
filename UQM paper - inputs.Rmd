@@ -737,7 +737,102 @@ audio.use[which(audio.use$SubmissionID == 1486),]
 length(which(audio.use$SubmissionID == 1486))
 length(unique(audio.use[which(audio.use$SubmissionID == 1486),1]))
 
-#FbP.summary[which(FbP.summary$SubmissionID == 1486),]
+FbP.summary[which(FbP.summary$SubmissionID == 1486),]
+
+```
+
+summary of proportion of audios used and not used
+```{r}
+names(audio.use)
+
+#number of submissions
+a = unique(audio.use[,c(4,11,13)])
+dcast(a, course ~ report)
+
+#number of audio annotations
+a = unique(audio.use[,c(1,4,11,13)])
+dcast(a, course ~ report)
+
+#number of audio in each state for each course and report
+a = audio.use[,c(11,13,2,3)]
+acast(a, course ~ report ~ State, sum)
+
+#this gives the same result
+with(FbP.FbU.audio, addmargins(table(project, State)))
+with(FbP.FbU.audio, addmargins(prop.table(table(project, State),1)))
+
+nrow(audio.use)
+t1 = audio.use %>% filter(Freq > 0)
+t2 = dcast(t1, SubmissionID+Filename~State, value.var="Freq", fun.aggregate=sum)
+#t4a = dcast(t1, SubmissionID+Filename~State, value.var="Freq", fun.aggregate=sum, margins = T)
+head(t2,n=15)
+t2 = as.data.frame(t2)
+
+t3 = t2[,1:2]
+for (i in 1:nrow(t2)){
+  for (j in 3:6) {
+    t3[i,j] = as.numeric(t2[i,j] > 0)
+  }
+}
+names(t3) = names(t2)
+head(t3, n=15)
+
+t3m = melt(t3, id=c("SubmissionID", "Filename"))
+head(t3m, n=15)
+
+t4 = dcast(t3m, SubmissionID ~ variable, fun.aggregate = sum)
+head(t4, n=15)
+
+
+#number of audio annots per submission ID
+totals = t3 %>% group_by(SubmissionID) %>% tally()
+head(totals, n=15)
+
+t5 = merge(t4, totals, by="SubmissionID")
+t5 = rename(t5, 6, "Recording")
+
+t5 = t5 %>% mutate(finished.p = round((finished/Recording)*100),0)
+t5 = t5 %>% mutate(pause.p = round((pause/Recording)*100),0)
+t5 = t5 %>% mutate(scrubbed.p = round((scrubbed/Recording)*100),0)
+t5 = t5 %>% mutate(unused.p = round((unused/Recording)*100),0)
+head(t5, n=15)
+
+#checker
+t = t5
+t[which(t$SubmissionID == 1501),]
+
+audio.use.sum = as.data.frame(t5)
+
+```
+
+audios played more than once  
+```{r}
+
+t3 = t2[,1:2]
+for (i in 1:nrow(t2)){
+  for (j in 3:6) {
+    t3[i,j] = as.numeric(t2[i,j] > 1)
+  }
+}
+names(t3) = names(t2)
+head(t3, n=15)
+
+t3m = melt(t3, id=c("SubmissionID", "Filename"))
+head(t3m, n=15)
+
+t4 = dcast(t3m, SubmissionID ~ variable, fun.aggregate = sum)
+head(t4, n=15)
+
+t5 = merge(t4, totals, by="SubmissionID")
+t5 = rename(t5, 6, "Recording")
+
+t5 = t5 %>% mutate(finished.p = round((finished/Recording)*100),0)
+t5 = t5 %>% mutate(pause.p = round((pause/Recording)*100),0)
+t5 = t5 %>% mutate(scrubbed.p = round((scrubbed/Recording)*100),0)
+t5 = t5 %>% mutate(unused.p = round((unused/Recording)*100),0)
+head(t5, n=15)
+
+audio.use_mulitple.sum = as.data.frame(t5)
 
 ```
 
@@ -760,6 +855,8 @@ write.csv(FbP.summary, file=paste0(folder, "FbPsummary.csv"), row.names=FALSE)
 write.csv(FbU.df, file=paste0(folder, "FbUdf.csv"), row.names=FALSE)
 
 write.csv(audio.use, file=paste0(folder, "AudioUse.csv"), row.names=TRUE)
+write.csv(audio.use.sum, file=paste0(folder, "AudioUseSummary.csv"), row.names=FALSE)
+write.csv(audio.use_multiple.sum, file=paste0(folder, "AudioUseManySummary.csv"), row.names=FALSE)
 
 write.csv(studs.withdrew, file=paste0(folder, "withdrawals.csv"), row.names=FALSE)
 write.csv(remarks.subID, file=paste0(folder, "remarks.csv"), row.names=FALSE)
