@@ -5,8 +5,52 @@ date: "10 July 2015"
 output: html_document
 ---
 
+A few quick outputs  
 
-```{r}
+```{r, echo=FALSE}
+#clean workspace
+rm(list=ls())
+
+#packages
+require(reshape2)
+require(dplyr)
+
+#scripts
+source("UQM functions.R")
+source("HelperFunctions.R")
+
+#data
+folder = "./Data Stage 2/"
+
+audio.use = read.csv(paste0(folder, "AudioUse.csv"), header=TRUE, stringsAsFactors=FALSE)
+audio.sum = read.csv(paste0(folder, "AudioUseSummary.csv"), header=TRUE, stringsAsFactors=FALSE)
+audio.sum.many = read.csv(paste0(folder, "AudioUseManySummary.csv"), header=TRUE, stringsAsFactors=FALSE)
+FbPsum = read.csv(paste0(folder, "FbPsummary.csv"), header=TRUE, stringsAsFactors=FALSE)
+
+#setup
+ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
+projects()
+graphs()
+
+```
+
+proportion of audio annotations that were played in full at least once  
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+plot.topper.dual()
+df = audio.sum
+names(df)
+plot.mean.sem(df, 7, 14, 20, report.col, report.names, "Number of audio annotations per report")
+plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names, "Number of text annotations per report")
+
+legend.top(sem.names,  kz.col)
+
+temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
+
+```
+
+
+```{r, echo=FALSE}
 names(audio.use)
 
 #number of submissions

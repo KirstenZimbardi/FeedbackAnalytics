@@ -147,9 +147,9 @@ stats.mean.sem = function(df, dv, iv)
   means = tapply(df[,dv], df[,iv], mean, na.rm=T)
   st.dev = tapply(df[,dv], df[,iv], sd, na.rm=T)
   n = tapply(df[,dv], df[,iv], length)
-  errors = st.dev/sqrt(n)
+  SEM = st.dev/sqrt(n)
   stats = as.data.frame(means)
-  stats = cbind(stats, errors)
+  stats = cbind(stats, SEM)
   return(stats)
 }
 

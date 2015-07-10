@@ -803,6 +803,24 @@ t[which(t$SubmissionID == 1501),]
 
 audio.use.sum = as.data.frame(t5)
 
+#adding iv back in
+
+df = audio.use.sum
+names(df)
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+#audio.use.sum = df.fixed
+
+df = audio.use
+names(df)
+df.fixed = df %>% filter(SubmissionID %in% SubID.master) 
+#audio.use = df.fixed
+
+df = merge(audio.use.sum, audio.use[,c(4,10:13)], by="SubmissionID", all.x = T, all.y = F)
+#dim(unique(df))
+df = unique(df)
+head(df)
+audio.use.sum = df
+
 ```
 
 audios played more than once  
@@ -832,10 +850,13 @@ t5 = t5 %>% mutate(scrubbed.p = round((scrubbed/Recording)*100),0)
 t5 = t5 %>% mutate(unused.p = round((unused/Recording)*100),0)
 head(t5, n=15)
 
-audio.use_mulitple.sum = as.data.frame(t5)
+audio.use_multiple.sum = as.data.frame(t5)
+
+df = merge(audio.use_multiple.sum, audio.use.sum[,c(1,11:14)], by="SubmissionID")
+head(df)
+audio.use_multiple.sum = df
 
 ```
-
 
 
 writing  
