@@ -1,0 +1,86 @@
+---
+title: "UQM paper - marking times"
+author: "KZ"
+date: "11 July 2015"
+output: html_document
+---
+
+#Import, clean, transform, export    
+BIOL1040 and BIOM2011, 2013, Sem 1 and 2
+```{r}
+#clean workspace
+rm(list=ls())
+
+#packages
+require(reshape2)
+require(dplyr)
+
+#functions
+source("UQM functions.R")
+source("HelperFunctions.R")
+
+
+#load data
+ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
+projects()
+
+folder = "./Data Stage 2/"
+SubID.index = uqm.csv("SubIDindex")
+
+folder = "./Data Stage 1/"
+mtimes = function(projects, project.names)
+{      
+  file.names <- lapply(projects, function(x){paste0(folder, "mt", x, ".csv")})
+  mt <- lapply(file.names, read.csv, header=TRUE, stringsAsFactors=FALSE)
+  names(mt) <- project.names
+  return(mt)
+}
+mt.ls = mtimes(project.num, project.names.formative) #creates a list for the 11 reports
+
+ls = mt.ls
+for (l in 1:length(ls))
+  print(lapply(ls, nrow)[[l]])
+
+ls = mt.ls
+for (l in 1:length(ls))
+  print(tail(ls[[l]]))
+
+mt = ls.df(mt.ls, 0)
+mt = rename(mt, 1:5, c("SubmissionID", "marking.sec", "Text", "Drawing", "Recording"))
+mt = mt %>% mutate(marking.min = marking.sec/60)
+mt[,10] = round(mt[,10],2)
+head(mt)
+tapply(mt[,10], mt[,6], mean)
+tapply(mt[,10], mt[,6], range)
+
+mt.f = mt[which(mt[,1] %in% SubID.index[,1]),]
+head(mt.f)
+table(mt.f$project)
+tapply(mt.f[,10], mt.f[,6], mean)
+tapply(mt.f[,10], mt.f[,6], range)
+
+which(mt[,2] == 0)
+which(mt.f[,2] == 0)
+empty = which(mt.f[,2] == 0)
+mt.f[empty,]
+
+mt.f = mt.f[-empty,]
+head(mt.f)
+table(mt.f$project)
+tapply(mt.f[,10], mt.f[,6], mean)
+tapply(mt.f[,10], mt.f[,6], range)
+
+default.plot()
+hist(log(mt.f[,10]))
+my.logs(-3, 6, 3, 9)
+tapply(log(mt.f[,10]), mt.f[,6], hist)
+
+```
+
+writing  
+```{r}
+
+folder = "./Data Stage 2/"
+write.csv(mt.f, file=paste0(folder, "MarkingTimes.csv"), row.names=FALSE)
+
+```

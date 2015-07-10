@@ -29,6 +29,53 @@ graphs = function(...)
   sem.names <<- sem.names
 }
 
+df.mark.convert = function(df, col1, col2)
+{
+  for (j in col1:col2)
+    for (i in 1:nrow(df))
+    {
+      if (df[i,j] == 100)
+        df[i,j] = 4
+      if (df[i,j] == 80)
+        df[i,j] = 3
+      if (df[i,j] == 60)
+        df[i,j] = 2
+      if (df[i,j] == 40)
+        df[i,j] = 1
+      if (df[i,j] == 20)
+        df[i,j] = 0
+    }
+  return(df)
+}
+
+#converting list to df
+
+ls.df = function(ls, adj)
+{
+  for (l in 1:length(ls))
+  {
+    col = length(ls[[l]])
+    cols = seq(col+1, col+4, 1)
+    l2 = l + adj
+    ls[[l]][,cols[1]] = project.names.formative[l2]
+    ls[[l]][,cols[2]] = substr(ls[[l]][,cols[1]], 1, 8)
+    ls[[l]][,cols[3]] = substr(ls[[l]][,cols[1]], 9, 12)
+    ls[[l]][,cols[4]] = substr(ls[[l]][,cols[1]], 13, 20)
+  } 
+  col.names = c("project", "course", "sem", "report")
+  for (l in 1:length(ls))
+    for (i in 1:length(cols))
+    {
+      ls[[l]] = rename(ls[[l]], cols[i], col.names[i])
+    }
+  df = ls[[1]]
+  for (l in 2:length(ls))
+  {
+    df = rbind(df, ls[[l]])
+  }
+  return(df)
+}
+
 #Generalising course names for publication
 gen = function(df, col.course, col.sem){
   df[,col.course] = gsub("BIOL1040", "Level 1", df[,col.course])

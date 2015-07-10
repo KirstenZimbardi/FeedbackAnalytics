@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+bundleId:
+        https://api.rpubs.com/api/v1/document/91908/ca22386c14f84e8fa8856f11d1e5441c
+url: http://rpubs.com/kirstenz/91908
+when: 1436567652.92403

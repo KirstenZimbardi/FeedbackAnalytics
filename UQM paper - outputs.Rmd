@@ -155,6 +155,35 @@ t5$p.value = tp(t5)
 A randomly selected sample of 160 audio annotations were transcribed and their word count determined. Talking speed was relatively stable across audio annotations, as they contained on average 164+/-6 words per minute, which is also consistent with previous reports of 450-500 words per 3 minute audio feedback comment (Brearley and Cullen 2012). To allow comparison between word length of typed and audio annotations, the length (in minutes) of each audio annotation was multiplied by 164, with audio annotations on average containing significantly more words (`r stats[3,1]`+/-`r stats[3,2]` words) than typed annotations (`r stats[4,1]`+/-`r stats[4,2]` words; p`r t$p.value`) (Figure 4). In the first years’ reports, markers provided on average a significantly greater number of typed annotations (`r stats3[1,1]`+/-`r stats3[1,2]`) than audio annotations (`r stats2[1,1]`+/-`r stats2[1,2]`; p`r t2$p.value`; Figure 2). This was reversed on the second years’ reports, where markers provided significantly more audio annotations (`r stats2[2,1]`+/-`r stats2[2,2]`) than typed annotations (`r stats3[2,1]`+/-`r stats3[2,2]`; p`r t3$p.value`; Figure 2). However, for both first (p`r t4$p.value`) and second (p`r t5$p.value`) years’ reports, the total amount of feedback provided in audio annotations, in terms of word length, was significantly greater than typed annotations (Figure 3). 
 
 
+```{r, echo=FALSE}
+df = FbP.AcP
+t = t.test(df[,4] ~ df[,15])
+t$p.value = tp(t)
+
+df2 = subset(FbP, AnnotType == "Recording")
+t2 = t.test(df2[,18] ~ df2[,15])
+t2$p.value = tp(t2)
+
+stats = stats.mean.sem(df2, 18, 15)
+stats = round(stats,1)
+
+df3 = subset(FbP, AnnotType == "Text")
+t3 = t.test(df3[,18] ~ df3[,15])
+t3$p.value = tp(t3)
+
+stats3 = stats.mean.sem(df3, 18, 15)
+stats3 = round(stats3,1)
+
+t4 = t.test(FbP[,18] ~ FbP[,15])
+t4$p.value = tp(t4)
+
+stats4 = stats.mean.sem(FbP, 18, 15)
+stats4 = round(stats4,1)
+```
+
+
+When comparing between year levels, it was found that markers provided significantly more audio annotations on second years’ work on average than on the first years’ reports (p`r t$p.value`; Figure 2), the annotations were also slightly, but significantly longer (`r stats[2,1]`+/-`r stats[2,2]` words; p`r t2$p.value`) than those provided to first year students (`r stats[1,1]`+/-`r stats[1,2]` words). In contrast, on the first year students reports markers provided more, significantly longer (`r stats3[1,1]`+/-`r stats3[1,2]` words) text annotations than for second years reports, who had fewer, shorter text annotations (`r stats3[2,1]`+/-`r stats3[2,2]` words; p`r t3$p.value`). Despite this, the total amount of feedback provided on second years’ work (`r stats4[2,1]`+/-`r stats4[2,2]` words) was significantly greater than that on first years’ reports (`r stats4[1,1]`+/-`r stats4[1,2]` words; p`r t4$p.value`; Figure 4A & B), *with audio annotations making up a significantly larger proportion of the total feedback provided on the second years’ reports* [DELETE? REPETITVE?]. *Reports from second year students also took longer to mark (mean+/-SEM) than first years’ reports (mean+/-SEM; p<0.05).* [DONT HAVE THIS DATA ON HAND] This may be related to the differences in task design between first and second year, with the second years’ reports being of greater average length (1909+/-150) than the first years’ reports (1269+/-99), or may reflect that the higher expectations of scientific reasoning for second year students require more detailed explanation by markers (ref APE paper). 
+
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 

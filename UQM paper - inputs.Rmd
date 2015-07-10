@@ -12,45 +12,13 @@ BIOL1040 and BIOM2011, 2013, Sem 1 and 2
 rm(list=ls())
 
 #packages
-#require(RCurl)
-require(bitops)
 require(reshape2)
 require(dplyr)
-"%w/o%" <- function(x, y) x[!x %in% y] #--  x without y
 
 #functions
 source("Functions to load UQM data.R")
 source("UQM functions.R")
 source("HelperFunctions.R")
-
-ls.dim = function(ls)
-  {
-  for (l in 1:length(ls))
-    print(dim(ls[[l]]))
-  }
-
-df.mark.convert = function(df, col1, col2)
-{
-  for (j in col1:col2)
-    for (i in 1:nrow(df))
-    {
-      if (df[i,j] == 100)
-        df[i,j] = 4
-      if (df[i,j] == 80)
-        df[i,j] = 3
-      if (df[i,j] == 60)
-        df[i,j] = 2
-      if (df[i,j] == 40)
-        df[i,j] = 1
-      if (df[i,j] == 20)
-        df[i,j] = 0
-    }
-  return(df)
-}
-
-dup = function(df, col.dup, col.return) {
-  return(unique(df[(which(duplicated(df[,col.dup]))),col.return]))
-}
 
 
 #load data

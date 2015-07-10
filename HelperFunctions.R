@@ -1,6 +1,13 @@
 #useful/helper functions
 
+"%w/o%" <- function(x, y) x[!x %in% y] #--  x without y
+
 #automating
+
+dup = function(df, col.dup, col.return) {
+  return(unique(df[(which(duplicated(df[,col.dup]))),col.return]))
+}
+
 
 rename = function(df, col, name)
 {
@@ -51,57 +58,9 @@ notfinal = function(df, new.col, project.col)
 }
 
 
-#converting list to df
-
-ls.df = function(ls, adj)
-{
-  for (l in 1:length(ls))
-  {
-    col = length(ls[[l]])
-    cols = seq(col+1, col+4, 1)
-    l2 = l + adj
-    ls[[l]][,cols[1]] = project.names.formative[l2]
-    ls[[l]][,cols[2]] = substr(ls[[l]][,cols[1]], 1, 8)
-    ls[[l]][,cols[3]] = substr(ls[[l]][,cols[1]], 9, 12)
-    ls[[l]][,cols[4]] = substr(ls[[l]][,cols[1]], 13, 20)
-  } 
-  col.names = c("project", "course", "sem", "report")
-  for (l in 1:length(ls))
-    for (i in 1:length(cols))
-  {
-    ls[[l]] = rename(ls[[l]], cols[i], col.names[i])
-  }
-  df = ls[[1]]
-  for (l in 2:length(ls))
-  {
-    df = rbind(df, ls[[l]])
-  }
-  return(df)
-}
 
 
 #list functions
-
-mark.convert = function(ls, col1, col2)
-{
-  for (l in 1:length(ls))
-    for (j in col1:col2)
-      for (i in 1:nrow(ls[[l]]))
-      {
-        if (ls[[l]][i,j] == 100)
-          ls[[l]][i,j] = 4
-        if (ls[[l]][i,j] == 80)
-          ls[[l]][i,j] = 3
-        if (ls[[l]][i,j] == 60)
-          ls[[l]][i,j] = 2
-        if (ls[[l]][i,j] == 40)
-          ls[[l]][i,j] = 1
-        if (ls[[l]][i,j] == 20)
-          ls[[l]][i,j] = 0
-      }
-  return(ls)
-}
-
 
 ls.names = function(ls)
 {
@@ -122,6 +81,11 @@ ls.rename = function(ls, col, name)
   return(ls)
 }
 
+ls.dim = function(ls)
+{
+  for (l in 1:length(ls))
+    print(dim(ls[[l]]))
+}
 
 #descrptive stats
 
