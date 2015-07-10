@@ -37,3 +37,8 @@ gen = function(df, col.course, col.sem){
   df[,col.sem] = gsub("Sem2", "Semester 2", df[,col.sem])
   return(df)
 }
+
+uqm.csv = function(file){
+  df = read.csv(paste0(folder, file, ".csv"), header=TRUE, stringsAsFactors=FALSE)
+  return(df)
+}

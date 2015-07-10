@@ -858,6 +858,11 @@ audio.use_multiple.sum = df
 
 ```
 
+SubmissionID index used to differentiate by course etc  
+(determined using AcP as the defining list of corpus)  
+```{r}
+SubID.index = AcP.df[,c(2,1,6:9)]
+```
 
 writing  
 ```{r}
@@ -878,6 +883,8 @@ write.csv(FbU.df, file=paste0(folder, "FbUdf.csv"), row.names=FALSE)
 write.csv(audio.use, file=paste0(folder, "AudioUse.csv"), row.names=TRUE)
 write.csv(audio.use.sum, file=paste0(folder, "AudioUseSummary.csv"), row.names=FALSE)
 write.csv(audio.use_multiple.sum, file=paste0(folder, "AudioUseManySummary.csv"), row.names=FALSE)
+
+write.csv(SubID.index, file=paste0(folder, "SubIDindex.csv"), row.names=FALSE)
 
 write.csv(studs.withdrew, file=paste0(folder, "withdrawals.csv"), row.names=FALSE)
 write.csv(remarks.subID, file=paste0(folder, "remarks.csv"), row.names=FALSE)

@@ -17,13 +17,14 @@ require(reshape2)
 require(dplyr)
 
 #load data
-#folder = "./Data Stage 2/"
-demog = read.csv("./Data Stage 2/demog.csv", header=TRUE, stringsAsFactors=FALSE)
-AcP = read.csv("./Data Stage 2/AcPdf.csv", header=TRUE, stringsAsFactors=FALSE)
-FbPsum = read.csv("./Data Stage 2/FbPsummary.csv", header=TRUE, stringsAsFactors=FALSE)
-FbP = read.csv("./Data Stage 2/FbPdf.csv", header=TRUE, stringsAsFactors=FALSE)
-FbU = read.csv("./Data Stage 2/FbUdf.csv", header=TRUE, stringsAsFactors=FALSE)
-AcPFbUbins = read.csv("./Data Stage 2/AcPFbUbins.csv", header=TRUE, stringsAsFactors=FALSE)
+folder = "./Data Stage 2/"
+demog = uqm.csv("demog")
+AcP = uqm.csv("AcPdf")
+FbPsum = uqm.csv("FbPsummary")
+FbP = uqm.csv("FbPdf")
+FbU = uqm.csv("FbUdf")
+AcPFbUbins = uqm.csv("AcPFbUbins")
+SubID.index = uqm.csv("SubIDindex")
 
 
 #load functions
@@ -56,12 +57,14 @@ temp2 = as.data.frame(round(prop.table(table(df[,5])),2)*100)
 
 df[,4] = as.Date(df[,4], "%d/%M/%Y")
 sem1 = as.Date("2013-03-01")
-df2 = df %>% select(Date.of.Birth) %>% mutate(sem1 - Date.of.Birth)
+#t5 = t5 %>% mutate(finished.p = round((finished/Recording)*100),0)
+df2 = df %>% select(Date.of.Birth) 
+df2 = df2 %>% mutate(age = (sem1 - Date.of.Birth))
 df2$age = as.numeric(df2[,2])%/%365
 #df2[1:10,]
 #table(df2[,3])
 bins = c(0, 16, 21, 60)
-df2$age.bin = cut(df2[,3], bins)
+df2$age.bin = cut(df2[,2], bins)
 #head(df2, n=20)
 temp3 = as.data.frame(round(prop.table(table(df2$age.bin)),2)*100)
 
@@ -107,11 +110,36 @@ NB Report 4 for the level 1 course in semester 2 was administered by another aca
 
 
 ```{r, echo=FALSE}
-#stats = stats.mean.sem(FbPsum, )
+stats = stats.mean.sem(FbP, 18, 4)
+stats = round(stats,1)
+
+stats2 = stats.mean.sem(FbP.AcP, 4, 15)
+stats2 = round(stats2,1)
+#stats2
+stats3 = stats.mean.sem(FbP.AcP, 5, 15)
+stats3 = round(stats3,1)
+#stats3
+
+df = subset(FbP, AnnotType == "Recording" | AnnotType == "Text")
+t = t.test(df[,18] ~ df[,4])
+tp = function(t) {
+  if(t$p.value <= 0.001) { t$p.value = "<0.001" }
+  return(t$p.value)
+}
+
+
+df2 = subset(FbPsum, course == "Level 1")
+t2 = t.test(df2[,4] ~ df2[,5])
+t2
+t2$p.value = tp(t2)
+t2$p.value 
+
+#t.test(FbP.AcP[,4] ~ FbP.AcP[,15])
+
 ```
 
 ##Feedback Provision
-A randomly selected sample of 160 audio annotations were transcribed and their word count determined. Talking speed was relatively stable across audio annotations, as they contained on average 164+/-6 words per minute, which is also consistent with previous reports of 450-500 words per 3 minute audio feedback comment (Brearley and Cullen 2012). To allow comparison between word length of typed and audio annotations, the length (in minutes) of each audio annotation was multiplied by 164, with audio annotations on average containing significantly more words (78.8+/-0.01 words) than typed annotations (10.9+/-0.01 words; p<0.05) (Figure 4). In the first years’ reports, markers provided on average a significantly greater number of typed annotations (6.9+/-0.1) than audio annotations (4.2+/-0.1; Figure 2). This was reversed on the second years’ reports, where markers provided significantly more audio annotations (X+/-X) than typed annotations (X+/-X; Figure 2). However, for both first and second years’ reports, the total amount of feedback provided in audio annotations, in terms of word length, was significantly greater than typed annotations (Figure 3). 
+A randomly selected sample of 160 audio annotations were transcribed and their word count determined. Talking speed was relatively stable across audio annotations, as they contained on average 164+/-6 words per minute, which is also consistent with previous reports of 450-500 words per 3 minute audio feedback comment (Brearley and Cullen 2012). To allow comparison between word length of typed and audio annotations, the length (in minutes) of each audio annotation was multiplied by 164, with audio annotations on average containing significantly more words (`r stats[3,1]`+/-`r stats[3,2]` words) than typed annotations (`r stats[4,1]`+/-`r stats[4,2]` words; p`r t$p.value`) (Figure 4). In the first years’ reports, markers provided on average a significantly greater number of typed annotations (`r stats3[1,1]`+/-`r stats3[1,2]`) than audio annotations (`r stats2[1,1]`+/-`r stats2[1,2]`; Figure 2). This was reversed on the second years’ reports, where markers provided significantly more audio annotations (`r stats2[2,1]`+/-`r stats2[2,2]`) than typed annotations (`r stats3[2,1]`+/-`r stats3[2,2]`; Figure 2). However, for both first and second years’ reports, the total amount of feedback provided in audio annotations, in terms of word length, was significantly greater than typed annotations (Figure 3). 
 
 
 
