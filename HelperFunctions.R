@@ -158,6 +158,13 @@ dep.variables = function()
   criteria = "Hypoth,Methods.writing,Methods.details,Methods.design,Results.text,Results.figures,Results.legends,Disc.knowlede,Disc.InterpFindings,Disc.Evidence,Refs,Writing"
 }
 
+#comparitive stats
+tp = function(t) {
+  if(t$p.value <= 0.001) { t$p.value = "<0.001" }
+  return(t$p.value)
+}
+
+
 
 #graphing functions
 

@@ -11,10 +11,17 @@ output: html_document
 rm(list=ls())
 
 #packages
-#require(RCurl)
-# require(bitops)
 require(reshape2)
 require(dplyr)
+
+#load functions
+source("UQM functions.R")
+source("HelperFunctions.R")
+
+ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
+projects()
+graphs()
+
 
 #load data
 folder = "./Data Stage 2/"
@@ -26,19 +33,13 @@ FbU = uqm.csv("FbUdf")
 AcPFbUbins = uqm.csv("AcPFbUbins")
 SubID.index = uqm.csv("SubIDindex")
 
-
-#load functions
-source("UQM functions.R")
-source("HelperFunctions.R")
-
-ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
-projects()
-graphs()
-
-
 #Generalising
 demog = gen(demog, 13, 14)
 AcP = gen(AcP, 7, 8)
+FbP = gen(FbP, 15, 16)
+FbU = gen(FbU, 22, 23)
+AcPFbUbins = gen(AcPFbUbins, 7, 8)
+SubID.index = gen(SubID.index, 4, 5)
 #FbPsum does not inlude project details, need to merge in from AcP
 #FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
 #FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
@@ -122,24 +123,36 @@ stats3 = round(stats3,1)
 
 df = subset(FbP, AnnotType == "Recording" | AnnotType == "Text")
 t = t.test(df[,18] ~ df[,4])
-tp = function(t) {
-  if(t$p.value <= 0.001) { t$p.value = "<0.001" }
-  return(t$p.value)
-}
+t$p.value = tp(t)
+#t$p.value
 
-
-df2 = subset(FbPsum, course == "Level 1")
-t2 = t.test(df2[,4] ~ df2[,5])
-t2
+df2 = subset(FbP.AcP, course == "Level 1")
+df2 = df2 %>% select(SubmissionID, Recording, Text)
+#head(df2)
+df2 = melt(df2, id=c("SubmissionID"))
+t2 = t.test(df2[,3] ~ df2[,2])
 t2$p.value = tp(t2)
-t2$p.value 
 
-#t.test(FbP.AcP[,4] ~ FbP.AcP[,15])
+df2 = subset(FbP.AcP, course == "Level 2")
+df2 = df2 %>% select(SubmissionID, Recording, Text)
+#head(df2)
+df2 = melt(df2, id=c("SubmissionID"))
+t3 = t.test(df2[,3] ~ df2[,2])
+t3$p.value = tp(t3)
+
+df = subset(FbP, AnnotType == "Recording" | AnnotType == "Text")
+df.1 = subset(df, course == "Level 1")
+t4 = t.test(df.1[,18] ~ df.1[,4])
+t4$p.value = tp(t4)
+
+df.2 = subset(df, course == "Level 2")
+t5 = t.test(df.2[,18] ~ df.2[,4])
+t5$p.value = tp(t5)
 
 ```
 
 ##Feedback Provision
-A randomly selected sample of 160 audio annotations were transcribed and their word count determined. Talking speed was relatively stable across audio annotations, as they contained on average 164+/-6 words per minute, which is also consistent with previous reports of 450-500 words per 3 minute audio feedback comment (Brearley and Cullen 2012). To allow comparison between word length of typed and audio annotations, the length (in minutes) of each audio annotation was multiplied by 164, with audio annotations on average containing significantly more words (`r stats[3,1]`+/-`r stats[3,2]` words) than typed annotations (`r stats[4,1]`+/-`r stats[4,2]` words; p`r t$p.value`) (Figure 4). In the first years’ reports, markers provided on average a significantly greater number of typed annotations (`r stats3[1,1]`+/-`r stats3[1,2]`) than audio annotations (`r stats2[1,1]`+/-`r stats2[1,2]`; Figure 2). This was reversed on the second years’ reports, where markers provided significantly more audio annotations (`r stats2[2,1]`+/-`r stats2[2,2]`) than typed annotations (`r stats3[2,1]`+/-`r stats3[2,2]`; Figure 2). However, for both first and second years’ reports, the total amount of feedback provided in audio annotations, in terms of word length, was significantly greater than typed annotations (Figure 3). 
+A randomly selected sample of 160 audio annotations were transcribed and their word count determined. Talking speed was relatively stable across audio annotations, as they contained on average 164+/-6 words per minute, which is also consistent with previous reports of 450-500 words per 3 minute audio feedback comment (Brearley and Cullen 2012). To allow comparison between word length of typed and audio annotations, the length (in minutes) of each audio annotation was multiplied by 164, with audio annotations on average containing significantly more words (`r stats[3,1]`+/-`r stats[3,2]` words) than typed annotations (`r stats[4,1]`+/-`r stats[4,2]` words; p`r t$p.value`) (Figure 4). In the first years’ reports, markers provided on average a significantly greater number of typed annotations (`r stats3[1,1]`+/-`r stats3[1,2]`) than audio annotations (`r stats2[1,1]`+/-`r stats2[1,2]`; p`r t2$p.value`; Figure 2). This was reversed on the second years’ reports, where markers provided significantly more audio annotations (`r stats2[2,1]`+/-`r stats2[2,2]`) than typed annotations (`r stats3[2,1]`+/-`r stats3[2,2]`; p`r t3$p.value`; Figure 2). However, for both first (p`r t4$p.value`) and second (p`r t5$p.value`) years’ reports, the total amount of feedback provided in audio annotations, in terms of word length, was significantly greater than typed annotations (Figure 3). 
 
 
 
