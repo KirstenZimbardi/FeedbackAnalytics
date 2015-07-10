@@ -7,7 +7,8 @@ output: html_document
 
 A few quick outputs  
 
-```{r, echo=FALSE}
+*_NB all adjusted so that the 'unopened' reports are not included in calculating proportion of audio used_*
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #clean workspace
 rm(list=ls())
 
@@ -26,120 +27,98 @@ audio.use = read.csv(paste0(folder, "AudioUse.csv"), header=TRUE, stringsAsFacto
 audio.sum = read.csv(paste0(folder, "AudioUseSummary.csv"), header=TRUE, stringsAsFactors=FALSE)
 audio.sum.many = read.csv(paste0(folder, "AudioUseManySummary.csv"), header=TRUE, stringsAsFactors=FALSE)
 FbPsum = read.csv(paste0(folder, "FbPsummary.csv"), header=TRUE, stringsAsFactors=FALSE)
+AcPFbUbins = read.csv(paste0(folder, "AcPFbUbins.csv"), header=TRUE, stringsAsFactors=FALSE)
+
 
 #setup
 ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
 projects()
 graphs()
 
+#checking data
+sub = subset(AcPFbUbins, open.bin == "unopened")
+sub = sub[,1]
+#length(which(audio.use$SubmissionID %in% sub))
+#length(which(audio.sum$SubmissionID %in% sub))
+
+au = audio.use
+as = audio.sum
+am = audio.sum.many
+
+unused = which(audio.use$SubmissionID %in% sub)
+audio.use = audio.use[-unused,]
+
+unused = which(audio.sum$SubmissionID %in% sub)
+audio.sum = audio.sum[-unused,]
+
+unused = which(audio.sum.many$SubmissionID %in% sub)
+audio.sum.many = audio.sum.many[-unused,]
+
+
 ```
 
-proportion of audio annotations that were played in full at least once  
+##proportion of all audio annotations (per report set) that were played in full at least once  
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
-plot.topper.dual()
-df = audio.sum
-names(df)
-plot.mean.sem(df, 7, 14, 20, report.col, report.names, "Number of audio annotations per report")
-plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names, "Number of text annotations per report")
+df = audio.use
+#names(df)
+t = NULL
+t2 = NULL
+ls = split(df, df$project)
+for (l in 1:length(ls)) {
+  df = ls[[l]]
+  t[[l]] = tapply(df$Freq, df$State, sum)
+  t2[[l]] = as.data.frame(addmargins(prop.table(t[[l]])))
+}
+#t
+#t2
+names(t2) = names(ls)
+df2 = ls.df(t2,0)
+df2 = rename(df2, 1, "audio.use")
+df2$audio.use = round(df2$audio.use*100,0)
+df2$State = rownames(df2)
+df2$State = gsub("[[:digit:]]", "", df2$State)
+rownames(df2) = 1:nrow(df2)
+df2 = df2[,c(6,1:5)]
+#head(df2, n=15)
+df3 = subset(df2, State == "finished")
 
+default.plot()
+par(mar = c(5.1, 5.0, 4.1, 2.1))
+barplot(df3$audio.use, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Proportion of audio annotations played \n(% of audio annotations across all reports)", axis.lty=1.0)
 legend.top(sem.names,  kz.col)
 
-temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
+```
+
+##proportion of audio annotations (in each report) that were played in full at least once  
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+df = audio.sum
+#names(df)
+
+default.plot()
+par(mar = c(5.1, 5.0, 4.1, 2.1))
+plot.mean.sem(df, 7, 11, 100, report.col, report.names, "Proportion of audio annotations played \n(% per report)")
+legend.top(sem.names,  kz.col)
+
+temp = as.data.frame(table(df[,12], df[,14]))
 
 ```
 
 
-```{r, echo=FALSE}
-names(audio.use)
 
-#number of submissions
-a = unique(audio.use[,c(4,11,13)])
-dcast(a, course ~ report)
+##proportion of audio annotations (in each report) that were played in full more than once  
+```{r, echo=FALSE, fig.width=10, fig.height=5}
 
-#number of audio annotations
-a = unique(audio.use[,c(1,4,11,13)])
-dcast(a, course ~ report)
+df = audio.sum.many
+#names(df)
 
-#number of audio in each state for each course and report
-a = audio.use[,c(11,13,2,3)]
-acast(a, course ~ report ~ State, sum)
+default.plot()
+par(mar = c(5.1, 5.0, 4.1, 2.1))
+plot.mean.sem(df, 7, 11, 100, report.col, report.names, "Proportion of audio annotations \nplayed multiple times (% per report)")
+legend.top(sem.names,  kz.col)
 
-#this gives the same result
-with(FbP.FbU.audio, addmargins(table(project, State)))
-with(FbP.FbU.audio, addmargins(prop.table(table(project, State),1)))
-
-nrow(audio.use)
-t1 = audio.use %>% filter(Freq > 0)
-t2 = dcast(t1, SubmissionID+Filename~State, value.var="Freq", fun.aggregate=sum)
-#t4a = dcast(t1, SubmissionID+Filename~State, value.var="Freq", fun.aggregate=sum, margins = T)
-head(t2,n=15)
-t2 = as.data.frame(t2)
-
-t3 = t2[,1:2]
-for (i in 1:nrow(t2)){
-  for (j in 3:6) {
-    t3[i,j] = as.numeric(t2[i,j] > 0)
-  }
-}
-names(t3) = names(t2)
-head(t3, n=15)
-
-t3m = melt(t3, id=c("SubmissionID", "Filename"))
-head(t3m, n=15)
-
-t4 = dcast(t3m, SubmissionID ~ variable, fun.aggregate = sum)
-head(t4, n=15)
-
-
-#number of audio annots per submission ID
-totals = t3 %>% group_by(SubmissionID) %>% tally()
-head(totals, n=15)
-
-t5 = merge(t4, totals, by="SubmissionID")
-t5 = rename(t5, 6, "Recording")
-
-t5 = t5 %>% mutate(finished.p = round((finished/Recording)*100),0)
-t5 = t5 %>% mutate(pause.p = round((pause/Recording)*100),0)
-t5 = t5 %>% mutate(scrubbed.p = round((scrubbed/Recording)*100),0)
-t5 = t5 %>% mutate(unused.p = round((unused/Recording)*100),0)
-head(t5, n=15)
-
-#checker
-t = t5
-t[which(t$SubmissionID == 1501),]
-
-audio.use.sum = as.data.frame(t5)
+temp = as.data.frame(table(df[,12], df[,14]))
 
 ```
 
-audios played more than once  
-```{r}
-
-t3 = t2[,1:2]
-for (i in 1:nrow(t2)){
-  for (j in 3:6) {
-    t3[i,j] = as.numeric(t2[i,j] > 1)
-  }
-}
-names(t3) = names(t2)
-head(t3, n=15)
-
-t3m = melt(t3, id=c("SubmissionID", "Filename"))
-head(t3m, n=15)
-
-t4 = dcast(t3m, SubmissionID ~ variable, fun.aggregate = sum)
-head(t4, n=15)
-
-t5 = merge(t4, totals, by="SubmissionID")
-t5 = rename(t5, 6, "Recording")
-
-t5 = t5 %>% mutate(finished.p = round((finished/Recording)*100),0)
-t5 = t5 %>% mutate(pause.p = round((pause/Recording)*100),0)
-t5 = t5 %>% mutate(scrubbed.p = round((scrubbed/Recording)*100),0)
-t5 = t5 %>% mutate(unused.p = round((unused/Recording)*100),0)
-head(t5, n=15)
-
-audio.use_mulitple.sum = as.data.frame(t5)
-
-```
