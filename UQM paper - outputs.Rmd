@@ -400,6 +400,37 @@ temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 Figure 4: Total amount of feedback provided in audio and text feedback for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) mean+/-SEM number of words in audio annotations in reports across two semesters and levels; B) mean+/-SEM number of words in text annotations in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
 
 
+```{r, echo=FALSE}
+
+look = AcPFbUbins %>% select(StudentID, course, project, OpenDuration.min)
+look = remover(look, 4)
+u = which(look$OpenDuration.min == 0)
+look = look[-u,]
+
+d = dcast(look, StudentID ~ course, sum)
+
+biol = d[which(d[,2] > 0),1]
+biom = d[which(d[,3] > 0),1]
+
+biol.all = demog %>% filter(course == "Level 1") %>% select(StudentID, sem, Course.Grade)
+biom.all = demog %>% filter(course == "Level 2") %>% select(StudentID, sem, Course.Grade)
+
+biol.looked = round(prop.table(table(biol.all[,1] %in% biol))*100,0)
+biom.looked = round(prop.table(table(biom.all[,1] %in% biom))*100,0)
+
+
+temp = with(subset(AcPFbUbins, course == "Level 1" & report == "Report 3"), round((prop.table(table(open.bin)))*100),2)
+temp2 = 100-temp[4]
+
+temp3 = with(subset(AcPFbUbins, course == "Level 2"), round((prop.table(table(open.bin, report),2))*100),2)
+temp4 = 100-temp3[4,1]
+temp5 = 100-temp3[4,2]
+
+```
+
+##Feedback use 
+*_Proportion of students viewing report feedback_*
+The vast majority of the first year students opened their marked reports (`r biol.looked[2]`%), although the proportion who did so tended to decline slightly across the semester, with the final report being opened by fewer students (`r temp2`%; Figure 5). Surprisingly, the reverse was true in second year students. In comparison to the first year students, fewer second year students opened any of their reports (`r biom.looked[2]`%), with only `r temp4`% opening their first report, but `r temp5`% opening their second report, a similar proportion to the first year students. Notably this pattern was consistent in each semester (Figure 5). It is difficult to identify the cause of this difference between first and second year students, it may reflect a lower engagement with assessment by second year students (Loughlin et al. 2013) or could be that the additional opportunities that the they had during class to gain verbal feedback on their first report meant that they were less reliant on the feedback provided on the report documents. 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
