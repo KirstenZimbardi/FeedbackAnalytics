@@ -434,26 +434,27 @@ The vast majority of the first year students opened their marked reports (`r bio
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
-
 looked = as.data.frame(addmargins(prop.table(table(AcPFbUbins[,6], AcPFbUbins[,11]),1)))
 looked = round(100-(looked[37:47,3]*100),2)
 #looked
 
 default.plot()
-
 barplot(looked, names = report.names, las=2, col=report.col, ylim=c(0,100), ylab="Number of Students (% of cohort)", axis.lty=1.0)
-
 legend.top(sem.names,  kz.col)
 
-
 temp = as.data.frame(table(AcP[,6]))
-
-
 ```
 
 
-Figure 5: The proportion of students who looked at their feedback (shown as the proportion of students who received feedback in each cohort). Number of students in each cohort: Level one semester 1: n=`r temp[1,2]`; Level one semester 2: n=`r temp[5,2]`; Level two semester 1: n=`r temp[8,2]`; Level two semester 2: n=`r temp[10,2]`. 
+Figure 5: The proportion of students who looked at their feedback (shown as the proportion of students who received feedback in each cohort). Number of students in each cohort: Level 1 Semester 1: n=`r temp[1,2]`; Level 1 Semester 2: n=`r temp[5,2]`; Level 2 Semester 1: n=`r temp[8,2]`; Level 2 Semester 2: n=`r temp[10,2]`. 
 
+
+```{r, echo=FALSE}
+
+```
+
+*_Feedback viewing duration and pause times_*   
+In terms of the duration for which student had reports open, in each semester and year level, the duration declined markedly to 30-90 minutes for the final report, compared with much longer open durations for the earlier 'non-final' reports which ranged between 3-7 hours on average across the two courses (Figure 6). When the patterns of open duration across the cohorts were examined in more detail (Figure 7), it was apparent that students interacted with their marked reports in different ways. For the non-final reports in each semester, of the students who opened their marked reports, the majority were divided approximately equally between those who opened their report for between one minute and an hour (X-X%), and those who opened them for greater than an hour (X-X%), with just a small number (X-X%) who opened their reports for 1 minute or less,. It is possible that these durations represent different categories of students, students who work through the feedback thoroughly; students who work through the feedback thoroughly and also use it directly to inform their subsequent report writing; and a small tail of students who glance through their reports very quickly, perhaps primarily to check their grade. This categorisation is supported by the timing of openings where it can be seen that there is a cluster of openings occurring shortly after the release of the marked reports (Figure X) and another cluster in the period 48 hours prior to the due date for the next report (Figure X) with the latter group being of longer open durations. It is also supported by the pattern of open durations for the final reports from each semester, which have on average, much shorter open durations (Figure 6) and far greater proportions of students falling into the categories of shorter open durations, of less than one minute (X%), or between one minute and one hour (X%; Figure 7B & D). The duration and timing of students interaction with feedback occurring on the non-final tasks suggests that the students perceive these tasks to be sufficiently similar to one another for the feedback to be useful for the subsequent tasks (Boud and Molloy 2013) but also suggests that one of the key drivers for student interaction with feedback is the immediacy of its use on similar assessment tasks. 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
@@ -494,7 +495,7 @@ temp = as.data.frame(table(AcPFbUbins[,6]))
 
 ```
 
-Figure 7: The number of students who had their feedback open for various durations following the level one semester one course A) formative report (Report 0: n=`r temp[1,2]`), and B) final report (Report 3: n=`r temp[4,2]`), and the level two semester one course C) first report (Report 1: n=`r temp[8,2]`), and C) final report (Report 2: n=`r temp[9,2]`). Data are presented as a frequency histogram showing the number of student across the log transformed open duration. 
+Figure 7: The number of students who had their feedback open for various durations following the Level 1 Semester 1 course A) formative report (Report 0: n=`r temp[1,2]`), and B) final report (Report 3: n=`r temp[4,2]`), and the Level 2 Semester 1 course C) first report (Report 1: n=`r temp[8,2]`), and C) final report (Report 2: n=`r temp[9,2]`). Data are presented as a frequency histogram showing the number of student across the log transformed open duration. 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}

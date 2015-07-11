@@ -529,6 +529,19 @@ AcP.open.bins = df
 #open.dur[1:5,]
 ```
 
+adding in final vs nonfinal categorisation  
+```{r}
+df = AcP.open.bins %>% filter(report != "Report 0" & report != "Report 1" & project != "BIOL1040Sem1Report 2" & project != "BIOL1040Sem2Report 2")
+
+finalsub = df[,1]
+
+AcP.open.bins$final = "nonfinal"
+AcP.open.bins$final[which(AcP.open.bins$SubmissionID %in% finalsub)] = "final"
+head(AcP.open.bins)
+tail(AcP.open.bins)
+
+```
+
 #FbP  
 sum of annotations per submission ID  
 ```{r}
