@@ -123,9 +123,16 @@ dep.variables = function()
 }
 
 #comparitive stats
+#t test p value extraction
 tp = function(t) {
   if(t$p.value <= 0.001) { t$p.value = "<0.001" }
   return(t$p.value)
+}
+
+#anova p value extraction
+ap = function(a) {
+  if(summary(a)[[1]][1,5] <= 0.001) { p = "<0.001" }
+  return(p)
 }
 
 

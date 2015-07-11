@@ -32,6 +32,7 @@ FbP = uqm.csv("FbPdf")
 FbU = uqm.csv("FbUdf")
 AcPFbUbins = uqm.csv("AcPFbUbins")
 SubID.index = uqm.csv("SubIDindex")
+mt = uqm.csv("MarkingTimes")
 
 #Generalising
 demog = gen(demog, 13, 14)
@@ -40,6 +41,7 @@ FbP = gen(FbP, 15, 16)
 FbU = gen(FbU, 22, 23)
 AcPFbUbins = gen(AcPFbUbins, 7, 8)
 SubID.index = gen(SubID.index, 4, 5)
+mt = gen(mt, 7, 8)
 #FbPsum does not inlude project details, need to merge in from AcP
 #FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
 #FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
@@ -122,31 +124,31 @@ stats3 = round(stats3,1)
 #stats3
 
 df = subset(FbP, AnnotType == "Recording" | AnnotType == "Text")
-t = t.test(df[,18] ~ df[,4])
+t = with(df, t.test(WordCount ~ AnnotType))
 t$p.value = tp(t)
 #t$p.value
 
 df2 = subset(FbP.AcP, course == "Level 1")
 df2 = df2 %>% select(SubmissionID, Recording, Text)
 #head(df2)
-df2 = melt(df2, id=c("SubmissionID"))
-t2 = t.test(df2[,3] ~ df2[,2])
+df2 = melt(df2, id=c("SubmissionID"), variable.name = "AnnotType", value.name = "annot.num")
+t2 = with(df2, t.test(annot.num ~ AnnotType))
 t2$p.value = tp(t2)
 
 df2 = subset(FbP.AcP, course == "Level 2")
 df2 = df2 %>% select(SubmissionID, Recording, Text)
 #head(df2)
-df2 = melt(df2, id=c("SubmissionID"))
-t3 = t.test(df2[,3] ~ df2[,2])
+df2 = melt(df2, id=c("SubmissionID"), variable.name = "AnnotType", value.name = "annot.num")
+t3 = with(df2, t.test(annot.num ~ AnnotType))
 t3$p.value = tp(t3)
 
 df = subset(FbP, AnnotType == "Recording" | AnnotType == "Text")
 df.1 = subset(df, course == "Level 1")
-t4 = t.test(df.1[,18] ~ df.1[,4])
+t4 = with(df.1, t.test(WordCount ~ AnnotType))
 t4$p.value = tp(t4)
 
 df.2 = subset(df, course == "Level 2")
-t5 = t.test(df.2[,18] ~ df.2[,4])
+t5 = with(df.2, t.test(WordCount ~ AnnotType))
 t5$p.value = tp(t5)
 
 ```
@@ -157,41 +159,47 @@ A randomly selected sample of 160 audio annotations were transcribed and their w
 
 ```{r, echo=FALSE}
 df = FbP.AcP
-t = t.test(df[,4] ~ df[,15])
+t = with(df, t.test(Recording ~ course))
 t$p.value = tp(t)
 
 df2 = subset(FbP, AnnotType == "Recording")
-t2 = t.test(df2[,18] ~ df2[,15])
+t2 = with(df2, t.test(WordCount ~ course))
 t2$p.value = tp(t2)
 
 stats = stats.mean.sem(df2, 18, 15)
 stats = round(stats,1)
 
 df3 = subset(FbP, AnnotType == "Text")
-t3 = t.test(df3[,18] ~ df3[,15])
+t3 = with(df3, t.test(WordCount ~ course))
 t3$p.value = tp(t3)
 
 stats3 = stats.mean.sem(df3, 18, 15)
 stats3 = round(stats3,1)
 
-t4 = t.test(FbP[,18] ~ FbP[,15])
+t4 = with(FbP, t.test(WordCount ~ course))
 t4$p.value = tp(t4)
 
 stats4 = stats.mean.sem(FbP, 18, 15)
 stats4 = round(stats4,1)
+
+t5 = with(mt, t.test(marking.min ~ course))
+t5$p.value = tp(t5)
+
+stats5 = stats.mean.sem(mt, 10, 7)
+stats5 = round(stats5,1)
+
+
 ```
 
 
-When comparing between year levels, it was found that markers provided significantly more audio annotations on second years’ work on average than on the first years’ reports (p`r t$p.value`; Figure 2), the annotations were also slightly, but significantly longer (`r stats[2,1]`+/-`r stats[2,2]` words; p`r t2$p.value`) than those provided to first year students (`r stats[1,1]`+/-`r stats[1,2]` words). In contrast, on the first year students reports markers provided more, significantly longer (`r stats3[1,1]`+/-`r stats3[1,2]` words) text annotations than for second years reports, who had fewer, shorter text annotations (`r stats3[2,1]`+/-`r stats3[2,2]` words; p`r t3$p.value`). Despite this, the total amount of feedback provided on second years’ work (`r stats4[2,1]`+/-`r stats4[2,2]` words) was significantly greater than that on first years’ reports (`r stats4[1,1]`+/-`r stats4[1,2]` words; p`r t4$p.value`; Figure 4A & B), *with audio annotations making up a significantly larger proportion of the total feedback provided on the second years’ reports* [DELETE? REPETITVE?]. *Reports from second year students also took longer to mark (mean+/-SEM) than first years’ reports (mean+/-SEM; p<0.05).* [DONT HAVE THIS DATA ON HAND] This may be related to the differences in task design between first and second year, with the second years’ reports being of greater average length (1909+/-150) than the first years’ reports (1269+/-99), or may reflect that the higher expectations of scientific reasoning for second year students require more detailed explanation by markers (ref APE paper). 
+When comparing between year levels, it was found that markers provided significantly more audio annotations on second years’ work on average than on the first years’ reports (p`r t$p.value`; Figure 2), the annotations were also slightly, but significantly longer (`r stats[2,1]`+/-`r stats[2,2]` words; p`r t2$p.value`) than those provided to first year students (`r stats[1,1]`+/-`r stats[1,2]` words). In contrast, on the first year students reports markers provided more, significantly longer (`r stats3[1,1]`+/-`r stats3[1,2]` words) text annotations than for second years reports, who had fewer, shorter text annotations (`r stats3[2,1]`+/-`r stats3[2,2]` words; p`r t3$p.value`). Despite this, the total amount of feedback provided on second years’ work (`r stats4[2,1]`+/-`r stats4[2,2]` words) was significantly greater than that on first years’ reports (`r stats4[1,1]`+/-`r stats4[1,2]` words; p`r t4$p.value`; Figure 4A & B), *with audio annotations making up a significantly larger proportion of the total feedback provided on the second years’ reports* [DELETE? REPETITVE?]. Reports from second year students also took longer to mark (`r stats5[2,1]`+/-`r stats5[2,2]` minutes) than first years’ reports (`r stats5[1,1]`+/-`r stats5[1,2]` minutes; p`r t5$p.value`). This may be related to the differences in task design between first and second year, with the second years’ reports being of greater average length (1909+/-150 words) than the first years’ reports (1269+/-99 words), or may reflect that the higher expectations of scientific reasoning for second year students require more detailed explanation by markers (ref APE paper). 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 plot.topper.dual()
-
 plot.mean.sem(FbP.AcP, 4, 14, 20, report.col, report.names, "Number of audio annotations per report")
 plot.mean.sem(FbP.AcP, 5, 14, 20, report.col, report.names, "Number of text annotations per report")
-
 legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
@@ -199,6 +207,115 @@ temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 ```
 
 Figure 2: Number of audio and text annotations for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A)  mean+/-SEM number of audio annotations per report across two semesters of level 1 and 2 subjects; B)  mean+/-SEM number of text annotations per report across two semesters of level 1 and 2 subjects.
+
+
+```{r, echo=FALSE}
+
+df = subset(FbP.AcP, report != "Report 0")
+df = df %>% select(SubmissionID, report, Recording, Text)
+head(df)
+dfm = melt(df, id=c("SubmissionID", "report"))
+head(dfm)
+dfm12 = subset(dfm, report == "Report 1" | report == "Report 2")
+t1 = t.test(dfm12[,4] ~ dfm12[,2])
+t1$p.value = tp(t1)
+stats1 = stats.mean.sem(dfm12, 4, 2)
+stats1 = round(stats1,1)
+
+dfm23 = subset(dfm, report == "Report 3" | report == "Report 2")
+t2 = t.test(dfm23[,4] ~ dfm23[,2])
+t2$p.value = tp(t2)
+stats2 = stats.mean.sem(dfm23, 4, 2)
+stats2 = round(stats2,1)
+
+df2 = FbP %>% filter(AnnotType == "Recording") %>% select(SubmissionID, course, sem, report, project, Duration.sec, WordCount)
+stats3 = stats.mean.sem(df2, 6, 2:3)
+stats3 = round(stats3,1)
+stats3minmean = min(stats3[,1:2])
+w = which(stats3[,1:2] == stats3minmean)
+s = as.matrix(stats3[,3:4])
+stats3maxmean = max(stats3[,1:2])
+w2 = which(stats3[,1:2] == stats3maxmean)
+s[w2]
+#(stats3minmean/60)*164
+#(stats3maxmean/60)*164
+#mean(df2[,6]) #ave audio duration (sec) all annotations
+#mean(df2[,7]) #ave audio length (words) all annotations
+#mean(FbP.AcP[,6]) #ave total feedback (words) per report
+#mean(FbP.AcP[,8]) #ave total audio length (words) per report
+#mean(FbP.AcP[,9]) #ave total text length (words) per report
+
+```
+
+With the exception of the formative task, markers tended to provide more audio annotations on the earliest reports in each year and semester, with the amount of audio feedback provided then declining on subsequent reports across each semester (Figure 2A; p`r t1$p.value`). Interestingly, despite this decline, the average length of each in situ audio annotation was relatively consistent, with averages across semesters and year levels varying between `r stats3minmean`+/-`r s[w]` and `r stats3maxmean`+/-`r s[w2]` seconds per annotation. With an average talking speed of 164 words/minute, this would suggest that markers tend to give feedback in approximately 80 word ‘sound bites’, effectively a short paragraph of information. This contrasts with other studies where a single audio annotation is given, as these tend to be considerably longer (Ribchester, France, and Wakefield 2008; Gould and Day 2013), but may equate to a similar amount of audio feedback being provided overall on equivalent tasks (Ice et al. 2010; Lunt and Curran 2010).
+
+
+```{r, echo=FALSE}
+
+df2 = FbP %>% filter(AnnotType == "Text") %>% select(SubmissionID, course, sem, report, project, WordCount)
+stats2 = stats.mean.sem(df2, 6, c(2,4))
+stats2 = round(stats2,1)
+
+df2a = df2 %>% filter(course == "Level 1" & sem == "Semester 1") 
+head(df2a)
+stats2a = stats.mean.sem(df2a, 6, 4)
+stats2a = round(stats2a,1)
+t2a = with(df2a, aov(WordCount ~ report))
+#summary(t2a)
+p2a = ap(t2a)
+tuk2a = TukeyHSD(t2a)
+#tuk2a
+#rownames(tuk2a[[1]])
+#tuk2a[[1]][19:24]
+
+df2b = df2 %>% filter(course == "Level 1" & sem == "Semester 2") 
+head(df2b)
+stats2b = stats.mean.sem(df2b, 6, 4)
+stats2b = round(stats2b,1)
+t2b = with(df2b, aov(WordCount ~ report))
+#summary(t2b)
+p2b = ap(t2b)
+tuk2b = TukeyHSD(t2b)
+#tuk2b
+#rownames(tuk2b[[1]])
+#tuk2b[[1]][10:12]
+
+df2c = df2 %>% filter(course == "Level 1" & report != "Report 0") 
+head(df2c)
+stats2c = stats.mean.sem(df2c, 6, 4)
+stats2c = round(stats2c,1)
+t2c = with(df2c, aov(WordCount ~ sem * report))
+#summary(t2c)
+p2c.sem = summary(t2c)[[1]][1,5]
+p2c.report = summary(t2c)[[1]][2,5]
+p2c.iteraction = summary(t2c)[[1]][3,5]
+
+stats2c2 = stats.mean.sem(df2c, 6, c(3,4))
+stats2c2 = round(stats2c2,1)
+
+stats2c3 = stats.mean.sem(df2c, 6, 3)
+stats2c3 = round(stats2c3,1)
+t2c3 = t.test(df2c[,6] ~ df2c[,3])
+#t2c3$p.value
+
+df3 = df2 %>% filter(course == "Level 2") 
+head(df3)
+
+
+df3c = df2 %>% filter(report != "Report 0" & report != "Report 3") 
+head(df3c)
+t3c = with(df3c, aov(WordCount ~ course * report))
+#summary(t3c)
+p3c.course = summary(t3c)[[1]][1,5]
+p3c.report = summary(t3c)[[1]][2,5]
+p3c.iteraction = summary(t3c)[[1]][3,5]
+if (round(p3c.course,3) <= 0.001) { p3c.course = "<0.001" }
+if (round(p3c.report,3) <= 0.001) { p3c.report = "<0.001" }
+
+```
+
+
+However, while audio annotations were relatively consistent in length, the typed annotations were not. The first year students in semester 1 received longer typed annotations on their early reports, with the longest typed comments appearing on the formative task (`r stats2a[1,1]`+/-`r stats2a[1,2]` words) and declining thereafter (Report 1: `r stats2a[2,1]`+/-`r stats2a[2,2]` words; Report 2: `r stats2a[3,1]`+/-`r stats2a[3,2]` words; Report 3: `r stats2a[4,1]`+/-`r stats2a[4,2]` words; p`r p2a`; Figure 3). In semester 2, where no formative task existed, *the typed annotations were longer than for the equivalent task in the earlier semester but* [DELETE - NOT SIG DIFF BETWEEN SEMESTERS (P=`r round(p2c.sem,3)`), AND NO SIG INTERACTION (P=`r round(p2c.iteraction,4)`)] declined in a similar way (Report 1: `r stats2b[2,1]`+/-`r stats2b[2,2]` words; Report 2: `r stats2b[3,1]`+/-`r stats2b[3,2]` words; Report 3: `r stats2b[4,1]`+/-`r stats2b[4,2]` words; p`r p2b`; Figure 3). *These differences between semesters suggest that there was an impact of the formative task.Potentially it gave markers an additional opportunity for feedback, allowing them to help the students to establish their writing skills early, then to focus on specific areas for improvement in latter tasks, whereas in the second semester these purposes had to be addressed across fewer tasks. This is supported by the finding that,* [DELETE - NOT SIG DIFF] Collectively, the amount of typed feedback provided across the first years’ reports was similar in each semester (Semester 1: `r stats2c3[1,1]`+/-`r stats2c3[1,2]` words; Semester 2: `r stats2c3[2,1]`+/-`r stats2c3[2,2]` words; p=`r round(t2c3$p.value, 3)`). *For the second years’ reports, the typed annotations were significantly fewer in number and shorter  (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.course`) than those provided on the first years’ reports.* [DELETE - REPEATS SECTION IN 2ND PARAGRAPH OF FEEDBACK PROVISION SECTION] For the second years’ reports, the number and length (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.report`) of typed annotations provided were consistent across the two reports (Figure X). This may reflect the preponderance of audio comments on the second years’ reports, with the brief typed comments likely to be primarily minor error corrections (Merry and Orsmond 2008). 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
@@ -340,34 +457,8 @@ Figure 9: Overall final mark for reports in the level 1 course (Report 0: n=`r t
 
 ```{r, echo=FALSE}
 #proportion of audio played
-FbP.audio = subset(FbP, AnnotType == "Recording")
-#NB found error - 45 audio files have NA for duration
-#FbP.audio[(which(is.na(FbP.audio$Duration.sec))),]
-FbP.audio = FbP.audio[,c(1,2,5,10,12,14:18)]
-
-FbU.audio = subset(FbU, Interaction == "Audio")
-FbU.audio$Filename = gsub(".mp3", ".m4a", FbU.audio$Filename)
-FbU.audio = FbU.audio[,c(1:2,10,12,16:20)]
-
-FbP.FbU.audio = merge(FbP.audio, FbU.audio, by="Filename", all.x=T)
-
-#surprisingly 2 of the NA duration audio were scrubbed and paused see EventID 123877, 123931, 123932
-#FbP.FbU.audio[(which(is.na(FbP.FbU.audio$Duration.sec))),]
-
-FbP.FbU.audio = remover(FbP.FbU.audio, 5)
-FbP.FbU.audio = rename(FbP.FbU.audio, 2, "SubmissionID")
-FbP.FbU.audio.openbins = merge(FbP.FbU.audio, AcPFbUbins[,c(1,5,10,11)], by="SubmissionID")
-FbP.FbU.audio.opened = subset(FbP.FbU.audio.openbins, open.bin !="unopened")
-
-b = with(FbP.FbU.audio.opened, table(SubmissionID, Filename))
-
-with(FbP.FbU.audio.opened, table(report, State))
-with(FbP.FbU.audio.opened, addmargins(table(State)))
-FbP.FbU.audio.opened[1:5,]
-FbP.FbU.audio[1:5,]
-with(FbP.FbU.audio, addmargins(table(State)))
-m = FbP.FbU.audio[(which(is.na(FbP.FbU.audio$State))),]
-m[seq(1,15000,500),]
+#see
+#"UQM paper - audio use.Rmd"
 ```
 
 
