@@ -417,6 +417,13 @@ df$Filename[1:5]
 FbU.df = df
 ```
 
+converting msecB4scroll to sec and minute  
+```{r}
+df = FbU.df %>% mutate(pause.sec = msec.B4.scroll/1000)
+df = df %>% mutate(pause.min = msec.B4.scroll/(1000*60))
+FbU.df = df
+```
+
 #AcP transformations  
 fixing marks for biol  
 ```{r}
@@ -531,6 +538,7 @@ AcP.open.bins = df
 
 adding in final vs nonfinal categorisation  
 ```{r}
+# for AcP.open.bins
 df = AcP.open.bins %>% filter(report != "Report 0" & report != "Report 1" & project != "BIOL1040Sem1Report 2" & project != "BIOL1040Sem2Report 2")
 
 finalsub = df[,1]
@@ -539,6 +547,11 @@ AcP.open.bins$final = "nonfinal"
 AcP.open.bins$final[which(AcP.open.bins$SubmissionID %in% finalsub)] = "final"
 head(AcP.open.bins)
 tail(AcP.open.bins)
+
+# for FbU
+finalsub = AcP.open.bins %>% filter(final == "final") 
+FbU.df$final = "nonfinal"
+FbU.df$final[which(FbU.df$SubmissionID %in% finalsub$SubmissionID)] = "final"
 
 ```
 

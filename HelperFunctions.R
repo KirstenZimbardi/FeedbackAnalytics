@@ -222,30 +222,64 @@ plot.mean.sem.adj = function(df, dv, iv, y.max, bar.col, x.names, y.name, adjust
 
 #log sequences 
 
-my.logs = function(start, end, sec.end, hr.start)
+my.logs = function(start, end)
 {
-  logs = seq(start, end, 1)  
-  hr.end = length(logs)
-  logs.t = sapply(logs, exp)
-  names(logs.t) = logs
-  logs.convert = logs.t
-  l = logs.convert
-  for (i in 1:sec.end)
-    logs.convert[i] = l[i]*60
-  for (i in hr.start:hr.end)
-    logs.convert[i] = l[i]/60
-  logs.convert = round(logs.convert,0)
+  logs = seq(start, end, 1) 
+  if (start < -4){
+    msec.end = which(logs == -5)
+    sec.start = which(logs == -4) 
+  } else  { sec.start = 1 }
   
-  min.start = sec.end+1
-  min.end = hr.start-1
-  l = logs.convert
-  l.n = as.character(l)
-  for (i in 1:sec.end)
-    l.n[i] = paste(l[i], "sec")
-  for (i in min.start:min.end)
-    l.n[i] = paste(l[i], "min")
+  sec.end = which(logs == -1)
+  min.start = which(logs == 0)
+  min.end = which(logs == 4)
+  hr.start = which(logs == 5)
+  if (end <= 7){
+    hr.end = length(logs)
+    day.start = NULL
+    day.end = NULL
+  }
+  
+  if (end > 7){
+    hr.end = which(logs == 7)
+    day.start = which(logs == 8)
+    day.end = length(logs)
+  }
+    
+  l = sapply(logs, exp)
+  names(l) = logs
+  if (start < -4){
+  for (i in 1:msec.end)
+    l[i] = l[i]*(1000*60)  
+  }
+  for (i in sec.start:sec.end)
+    l[i] = l[i]*60
   for (i in hr.start:hr.end)
-    l.n[i] = paste(l[i], "hr")
-  names(l.n) = logs
-  return(l.n)
+    l[i] = l[i]/60
+  if (end > 7){
+    for (i in day.start:day.end)
+      l[i] = l[i]/(60*24)
+  }
+  l = round(l,0)
+  
+  l = as.character(l)
+
+  if (start < -4){
+    for (i in 1:msec.end)
+      l[i] = paste(l[i], "msec")
+  }
+  for (i in sec.start:sec.end)
+    l[i] = paste(l[i], "sec")
+  for (i in min.start:min.end)
+    l[i] = paste(l[i], "min")
+  for (i in hr.start:hr.end)
+    l[i] = paste(l[i], "hr")
+  
+  if (end > 7){
+    for (i in day.start:day.end)
+      l[i] = paste(l[i], "days")
+  }
+  
+  names(l) = logs
+  return(l)
 }

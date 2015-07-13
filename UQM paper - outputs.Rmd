@@ -322,7 +322,7 @@ stats4 = round(stats4,1)
 ```
 
 
-However, while audio annotations were relatively consistent in length, the typed annotations were not. The first year students in semester 1 received longer typed annotations on their early reports, with the longest typed comments appearing on the formative task (`r stats2a[1,1]`+/-`r stats2a[1,2]` words) and declining thereafter (Report 1: `r stats2a[2,1]`+/-`r stats2a[2,2]` words; Report 2: `r stats2a[3,1]`+/-`r stats2a[3,2]` words; Report 3: `r stats2a[4,1]`+/-`r stats2a[4,2]` words; p`r p2a`; Figure 3). In semester 2, where no formative task existed, *the typed annotations were longer than for the equivalent task in the earlier semester but* [DELETE - NOT SIG DIFF BETWEEN SEMESTERS (P=`r round(p2c.sem,3)`), AND NO SIG INTERACTION (P=`r round(p2c.iteraction,4)`)] declined in a similar way (Report 1: `r stats2b[2,1]`+/-`r stats2b[2,2]` words; Report 2: `r stats2b[3,1]`+/-`r stats2b[3,2]` words; Report 3: `r stats2b[4,1]`+/-`r stats2b[4,2]` words; p`r p2b`; Figure 3). *These differences between semesters suggest that there was an impact of the formative task.Potentially it gave markers an additional opportunity for feedback, allowing them to help the students to establish their writing skills early, then to focus on specific areas for improvement in latter tasks, whereas in the second semester these purposes had to be addressed across fewer tasks. This is supported by the finding that,* [DELETE - NOT SIG DIFF] Collectively, the amount of typed feedback provided across the first years’ reports was similar in each semester (Semester 1: `r stats2c3[1,1]`+/-`r stats2c3[1,2]` words; Semester 2: `r stats2c3[2,1]`+/-`r stats2c3[2,2]` words; p=`r round(t2c3$p.value, 3)`). *For the second years’ reports, the typed annotations were significantly fewer in number and shorter  (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.course`) than those provided on the first years’ reports.* [DELETE - REPEATS SECTION IN 2ND PARAGRAPH OF FEEDBACK PROVISION SECTION] For the second years’ reports, the number (Report 1: `r stats3[1,1]`+/-`r stats3[1,2]` words; Report 2: `r stats3[2,1]`+/-`r stats3[2,2]` words, p`r t4$p.value`) and length (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.report`) of typed annotations declined across the two reports. *This may reflect the preponderance of audio comments on the second years’ reports, with the brief typed comments likely to be primarily minor error corrections (Merry and Orsmond 2008).* [DELETE - NO LONGER SUPPORTED BY STAT'S] 
+However, while audio annotations were relatively consistent in length, the typed annotations were not. The first year students in semester 1 received longer typed annotations on their early reports, with the longest typed comments appearing on the formative task (`r stats2a[1,1]`+/-`r stats2a[1,2]` words) and declining thereafter (Report 1: `r stats2a[2,1]`+/-`r stats2a[2,2]` words; Report 2: `r stats2a[3,1]`+/-`r stats2a[3,2]` words; Report 3: `r stats2a[4,1]`+/-`r stats2a[4,2]` words; p`r p2a`; Figure 3). In semester 2, where no formative task existed, *the typed annotations were longer than for the equivalent task in the earlier semester but* [DELETE - NOT SIG DIFF BETWEEN SEMESTERS (P=`r round(p2c.sem,3)`), AND NO SIG INTERACTION (P=`r round(p2c.iteraction,4)`)] declined in a similar way (Report 1: `r stats2b[1,1]`+/-`r stats2b[1,2]` words; Report 2: `r stats2b[2,1]`+/-`r stats2b[2,2]` words; Report 3: `r stats2b[3,1]`+/-`r stats2b[3,2]` words; p`r p2b`; Figure 3). *These differences between semesters suggest that there was an impact of the formative task.Potentially it gave markers an additional opportunity for feedback, allowing them to help the students to establish their writing skills early, then to focus on specific areas for improvement in latter tasks, whereas in the second semester these purposes had to be addressed across fewer tasks. This is supported by the finding that,* [DELETE - NOT SIG DIFF] Collectively, the amount of typed feedback provided across the first years’ reports was similar in each semester (Semester 1: `r stats2c3[1,1]`+/-`r stats2c3[1,2]` words; Semester 2: `r stats2c3[2,1]`+/-`r stats2c3[2,2]` words; p=`r round(t2c3$p.value, 3)`). *For the second years’ reports, the typed annotations were significantly fewer in number and shorter  (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.course`) than those provided on the first years’ reports.* [DELETE - REPEATS SECTION IN 2ND PARAGRAPH OF FEEDBACK PROVISION SECTION] For the second years’ reports, the number (Report 1: `r stats3[1,1]`+/-`r stats3[1,2]` words; Report 2: `r stats3[2,1]`+/-`r stats3[2,2]` words, p`r t4$p.value`) and length (Report 1: `r stats2[2,2]`+/-`r stats2[2,6]` words; Report 2: `r stats2[2,3]`+/-`r stats2[2,7]` words, p`r p3c.report`) of typed annotations declined across the two reports. *This may reflect the preponderance of audio comments on the second years’ reports, with the brief typed comments likely to be primarily minor error corrections (Merry and Orsmond 2008).* [DELETE - NO LONGER SUPPORTED BY STAT'S] 
 
 
 ```{r, echo=FALSE}
@@ -400,7 +400,7 @@ temp = as.data.frame(table(FbP.AcP[,15], FbP.AcP[,17]))
 Figure 4: Total amount of feedback provided in audio and text feedback for level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Shown is the A) mean+/-SEM number of words in audio annotations in reports across two semesters and levels; B) mean+/-SEM number of words in text annotations in reports across two semesters and two levels. *NB The y-axis scale for A is 10x the y-axis scale for B.*
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=F, warning=F}
 
 look = AcPFbUbins %>% select(StudentID, course, project, OpenDuration.min)
 look = remover(look, 4)
@@ -429,7 +429,7 @@ temp5 = 100-temp3[4,2]
 ```
 
 ##Feedback use 
-*_Proportion of students viewing report feedback_*
+**_Proportion of students viewing report feedback_**  
 The vast majority of the first year students opened their marked reports (`r biol.looked[2]`%), although the proportion who did so tended to decline slightly across the semester, with the final report being opened by fewer students (`r temp2`%; Figure 5). Surprisingly, the reverse was true in second year students. In comparison to the first year students, fewer second year students opened any of their reports (`r biom.looked[2]`%), with only `r temp4`% opening their first report, but `r temp5`% opening their second report, a similar proportion to the first year students. Notably this pattern was consistent in each semester (Figure 5). It is difficult to identify the cause of this difference between first and second year students, it may reflect a lower engagement with assessment by second year students (Loughlin et al. 2013) or could be that the additional opportunities that the they had during class to gain verbal feedback on their first report meant that they were less reliant on the feedback provided on the report documents. 
 
 
@@ -450,11 +450,41 @@ Figure 5: The proportion of students who looked at their feedback (shown as the 
 
 
 ```{r, echo=FALSE}
+df = AcPFbUbins %>% filter(open.bin != "unopened")
+#with(df, tapply(OpenDuration.min, final, mean, na.rm=T))
+stats = stats.mean.sem(df, 10, 12)
+stats = round(stats,0)
+
+stats2 = stats.mean.sem(df, 10, c(12,7,8))
+stats2 = round(stats2,0)
+
+finalminmean = min(stats2[1,1:4])
+w = which(stats2[1,1:4] == finalminmean)
+s = as.matrix(stats2[1,5:8])
+finalmaxmean = max(stats2[1,1:4])
+w2 = which(stats2[1,1:4] == finalmaxmean)
+
+nonfinalminmean = min(stats2[2,1:4])
+w3 = which(stats2[2,1:4] == nonfinalminmean)
+s2 = as.matrix(stats2[2,5:8])
+nonfinalmaxmean = max(stats2[2,1:4])
+w4 = which(stats2[2,1:4] == nonfinalmaxmean)
+
+stats3maxmean = max(stats3[,1:2])
+w2 = which(stats3[,1:2] == stats3maxmean)
+#s[w2]
+
+df2 = df %>% filter(final == "nonfinal")
+nf = as.data.frame(with(df2, round(prop.table(table(open.bin, final))*100,0)))
+
 
 ```
 
-*_Feedback viewing duration and pause times_*   
-In terms of the duration for which student had reports open, in each semester and year level, the duration declined markedly to 30-90 minutes for the final report, compared with much longer open durations for the earlier 'non-final' reports which ranged between 3-7 hours on average across the two courses (Figure 6). When the patterns of open duration across the cohorts were examined in more detail (Figure 7), it was apparent that students interacted with their marked reports in different ways. For the non-final reports in each semester, of the students who opened their marked reports, the majority were divided approximately equally between those who opened their report for between one minute and an hour (X-X%), and those who opened them for greater than an hour (X-X%), with just a small number (X-X%) who opened their reports for 1 minute or less,. It is possible that these durations represent different categories of students, students who work through the feedback thoroughly; students who work through the feedback thoroughly and also use it directly to inform their subsequent report writing; and a small tail of students who glance through their reports very quickly, perhaps primarily to check their grade. This categorisation is supported by the timing of openings where it can be seen that there is a cluster of openings occurring shortly after the release of the marked reports (Figure X) and another cluster in the period 48 hours prior to the due date for the next report (Figure X) with the latter group being of longer open durations. It is also supported by the pattern of open durations for the final reports from each semester, which have on average, much shorter open durations (Figure 6) and far greater proportions of students falling into the categories of shorter open durations, of less than one minute (X%), or between one minute and one hour (X%; Figure 7B & D). The duration and timing of students interaction with feedback occurring on the non-final tasks suggests that the students perceive these tasks to be sufficiently similar to one another for the feedback to be useful for the subsequent tasks (Boud and Molloy 2013) but also suggests that one of the key drivers for student interaction with feedback is the immediacy of its use on similar assessment tasks. 
+**_Feedback viewing duration and pause times_**   
+In terms of the duration for which student had reports open, in each semester and year level, the duration declined markedly to *30-90 minutes* [?REPLACE WITH:] (`r stats[1,1]`+/-`r stats[1,2]` minutes) [?OR REPLACE WITH:] `r finalminmean`+/-`r s[w]` to `r finalmaxmean`+/-`r s[w2]` minutes for the final report, compared with much longer open durations for the earlier 'non-final' reports (`r round(stats[2,1]/60,1)`+/-`r stats[2,2]/60` hours) [??OR AS RANGE] (`r round(nonfinalminmean/60,1)`+/-`r round(s2[w3]/60,1)` to `r round(nonfinalmaxmean/60,1)`+/-`r round(s2[w4]/60,1)`) [?TO REPLACE:] *which ranged between 3-7 hours on average across the two courses* (Figure 6). When the patterns of open duration across the cohorts were examined in more detail (Figure 7), it was apparent that students interacted with their marked reports in different ways. For the non-final reports in each semester, of the students who opened their marked reports, the majority were divided approximately equally between those who opened their report for between one minute and an hour (`r nf[2,1]`%), and those who opened them for greater than an hour (`r nf[1,1]`%), with just a small number (`r nf[3,1]`%) who opened their reports for 1 minute or less. It is possible that these durations represent different categories of students, students who work through the feedback thoroughly; students who work through the feedback thoroughly and also use it directly to inform their subsequent report writing; and a small tail of students who glance through their reports very quickly, perhaps primarily to check their grade. 
+
+**_need to add in P groups and convert dates_**  
+This categorisation is supported by the timing of openings where it can be seen that there is a cluster of openings occurring shortly after the release of the marked reports (Figure X) and another cluster in the period 48 hours prior to the due date for the next report (Figure X) with the latter group being of longer open durations. It is also supported by the pattern of open durations for the final reports from each semester, which have on average, much shorter open durations (Figure 6) and far greater proportions of students falling into the categories of shorter open durations, of less than one minute (X%), or between one minute and one hour (X%; Figure 7B & D). The duration and timing of students interaction with feedback occurring on the non-final tasks suggests that the students perceive these tasks to be sufficiently similar to one another for the feedback to be useful for the subsequent tasks (Boud and Molloy 2013) but also suggests that one of the key drivers for student interaction with feedback is the immediacy of its use on similar assessment tasks. 
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
@@ -473,7 +503,7 @@ Figure 6: The duration students had their report feedback open for the level 1 c
 
 ```{r, echo=FALSE, fig.width=12, fig.height=5}
 
-x = my.logs(-4, 9, 4, 10)
+x = my.logs(-4, 9)
 p = project.names.formative[c(1,4,8,9)]
 
 default.plot()
@@ -498,10 +528,34 @@ temp = as.data.frame(table(AcPFbUbins[,6]))
 Figure 7: The number of students who had their feedback open for various durations following the Level 1 Semester 1 course A) formative report (Report 0: n=`r temp[1,2]`), and B) final report (Report 3: n=`r temp[4,2]`), and the Level 2 Semester 1 course C) first report (Report 1: n=`r temp[8,2]`), and C) final report (Report 2: n=`r temp[9,2]`). Data are presented as a frequency histogram showing the number of student across the log transformed open duration. 
 
 
+
+```{r, echo=FALSE}
+
+df = FbU %>% filter (msec.B4.scroll > 0)
+
+stats = stats.mean.sem(df, 26, 27)
+stats = as.data.frame(round(stats,2))
+
+#df2 = df %>% filter(course == "Level 1")
+#stats2 = stats.mean.sem(df2, 25, c(23:24))
+#stats2 = round(stats2,0)
+#df3 = df %>% filter(course == "Level 2")
+#stats3 = stats.mean.sem(df3, 25, c(23:24))
+#stats3 = round(stats3,0)
+#round(stats2/60,2)
+#round(stats3/60,2)
+
+pause.bin = c(0, 1, 180, max(df$pause.sec))
+pauses = as.data.frame(round(prop.table(table(cut(df$pause.sec, pause.bin)))*100,0))
+
+```
+
+However the analytics used in this study are able to go beyond simple duration of openings, with the “clickstream” data providing the first insights into the temporal patterns of student interactions with feedback, through an examination of the duration for which students paused until the next ‘click’. These clicks represent student interactions with the report document, such as selecting a position within it, opening an audio annotation or scrolling. The average duration of these pauses was `r stats[2,1]`+/-`r stats[2,2]` minutes for non-final reports, and `r stats[1,1]`+/-`r stats[1,2]` minutes for final reports. The vast majority of these pauses (`r pauses[2,2]`%) fell between 1 second and 3 minutes, with very few pauses exceeding one hour (`r pauses[3,2]`%; Figure 9). This finding suggests that, despite the often considerable duration for which students had their reports open, they were spending much of this time on active interaction with the report, rather than simply leaving it open for extended periods. In addition, this pattern of behaviour was very consistent across all non-final reports at both year levels, such that it is likely that this represents the “normal” pattern by which students interact with in situ feedback. 
+
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 default.plot()
-plot.mean.sem.adj(FbU, 15, 21, 4, report.col, report.names, "Pause duration (min)", 60000)
+plot.mean.sem(FbU, 26, 21, 4, report.col, report.names, "Pause duration (min)")
 legend.top(sem.names,  kz.col)
 
 temp = as.data.frame(table(AcPFbUbins[,7], AcPFbUbins[,9]))
@@ -510,6 +564,84 @@ temp = as.data.frame(table(AcPFbUbins[,7], AcPFbUbins[,9]))
 
 
 Figure 8: Duration for which students pause between clicks when interacting with feedback for the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM time that students paused between clicks for each report, in minutes
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+df = FbU %>% filter (msec.B4.scroll > 0)
+
+low = -5
+high = 6
+x = my.logs(low, high)
+
+default.plot()
+h = hist(log(df$pause.min), main = "", ylab = "Number of pauses", xlab = "Pause duration (log scale)", xlim=c(low, high),  ylim=c(0, 150000), axes=F)
+axis(1, at=seq(low, high, 1), labels = x)
+axis(2)
+
+temp = length(unique(df$SubmissionID))
+```
+
+Figure 9: Frequency histogram of the duration students pause between clicks when interacting with feedback across the corpus of reports (n=`r temp` reports). Data are expressed as the number of times students paused between clicks for each duration (x scale is log transformed ranging from msec to hours).
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+df = FbU %>% filter (msec.B4.scroll > 0)
+df1 = df %>% filter(final == "nonfinal" )
+df2 = df %>% filter(final == "final" )
+
+low = -5
+high = 6
+x = my.logs(low, high)
+
+default.plot()
+par(mfrow=c(1,2))
+
+h = hist(log(df1$pause.min), main = "", ylab = "Number of pauses", xlab = "Pause duration (log scale)", xlim=c(low, high),  ylim=c(0, 120000), axes=F)
+axis(1, at=seq(low, high, 1), labels = x)
+axis(2)
+
+h = hist(log(df2$pause.min), main = "", ylab = "Number of pauses", xlab = "Pause duration (log scale)", xlim=c(low, high),  ylim=c(0, 120000), axes=F)
+axis(1, at=seq(low, high, 1), labels = x)
+axis(2)
+
+temp1 = length(unique(df1$SubmissionID))
+temp2 = length(unique(df2$SubmissionID))
+
+
+```
+
+
+Figure 9: Frequency histogram of the duration students pause between clicks when interacting with feedback for the A) non-final reports (n=`r temp1` reports) and B) final reports (n=`r temp2` reports). Data are expressed as the number of times students paused between clicks for each duration (x scale is log transformed ranging from msec to hours).
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+df = FbU %>% filter (msec.B4.scroll > 0)
+df1 = df %>% filter(final == "nonfinal" )
+df2 = df %>% filter(final == "final" )
+
+low = -5
+high = 6
+x = my.logs(low, high)
+y = seq(0, 40, 10)
+default.plot()
+par(mfrow=c(1,2))
+
+hist(log(df1$pause.min), main = "", ylab = "Proportion of pauses (%)", xlab = "Pause duration (log scale)", xlim=c(low, high),  ylim=c(0, 0.4), axes=F, prob = T)
+axis(1, at=seq(low, high, 1), labels = x)
+axis(2, at=seq(0, 0.4, 0.1), labels = y)
+
+hist(log(df2$pause.min), main = "", ylab = "Proportion of pauses (%)", xlab = "Pause duration (log scale)", xlim=c(low, high),  ylim=c(0, 0.4), axes=F, prob = T)
+axis(1, at=seq(low, high, 1), labels = x)
+axis(2, at=seq(0, 0.4, 0.1), labels = y)
+
+temp1 = length(unique(df1$SubmissionID))
+temp2 = length(unique(df2$SubmissionID))
+
+
+```
+
+
+Figure 9: Frequency histogram of the duration students pause between clicks when interacting with feedback for the A) non-final reports (n=`r temp1` reports) and B) final reports (n=`r temp2` reports). Data are expressed as the proportion of pauses students took between clicks, ranging from milliseconds to hours (x scale is log transformed to improve clarity).
 
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
@@ -523,7 +655,7 @@ temp = as.data.frame(table(AcP[,7], AcP[,9]))
 ```
 
 
-Figure 9: Overall final mark for reports in the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM mark that students achieved for each report, as a percentage.
+Figure 10: Overall final mark for reports in the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM mark that students achieved for each report, as a percentage.
 
 
 ```{r, echo=FALSE}
