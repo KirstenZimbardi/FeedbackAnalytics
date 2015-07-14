@@ -176,11 +176,11 @@ t3$p.value = tp(t3)
 stats3 = stats.mean.sem(df3, 18, 15)
 stats3 = round(stats3,1)
 
-t4 = with(FbP, t.test(WordCount ~ course))
+t4 = with(FbP.AcP, t.test(total.words ~ course))
 t4$p.value = tp(t4)
 
-stats4 = stats.mean.sem(FbP, 18, 15)
-stats4 = round(stats4,1)
+stats4 = stats.mean.sem(FbP.AcP, 6, 15)
+stats4 = round(stats4,0)
 
 t5 = with(mt, t.test(marking.min ~ course))
 t5$p.value = tp(t5)
@@ -644,6 +644,99 @@ temp2 = length(unique(df2$SubmissionID))
 Figure 9: Frequency histogram of the duration students pause between clicks when interacting with feedback for the A) non-final reports (n=`r temp1` reports) and B) final reports (n=`r temp2` reports). Data are expressed as the proportion of pauses students took between clicks, ranging from milliseconds to hours (x scale is log transformed to improve clarity).
 
 
+*checking number of clicks for final vs nonfinal*  
+```{r, echo=FALSE}
+#BIOL1040
+df1 = FbU %>% filter(course == "Level 1", report != "Report 0" & report != "Report 2")
+df1b = df1 %>% group_by(SubmissionID) %>% tally(sort=T)
+#head(df1b)
+
+finals = FbU %>% select(SubmissionID, report, final)
+finals = (unique(finals))
+df1b = merge(df1b, finals, by="SubmissionID")
+
+stats = stats.mean.sem(df1b, 2, 4)
+stats = round(stats,0)
+#stats
+t = with(df1b, t.test(n ~ final))
+#t
+t$p.value = tp(t)
+
+#BIOM2011
+df2 = FbU %>% filter(course == "Level 2")
+df2b = df2 %>% group_by(SubmissionID) %>% tally(sort=T)
+#head(df2b)
+
+df2b = merge(df2b, finals, by="SubmissionID")
+
+stats2 = stats.mean.sem(df2b, 2, 4)
+stats2 = round(stats2,0)
+#stats2
+t2 = with(df2b, t.test(n ~ final))
+#t2
+t2$p.value = tp(t2)
+
+```
+
+Students interacted with their non-final reports to a significantly greater degree compared with their final reports for both the level 1 course (Report 1: `r stats[2,1]`+/-`r stats[2,2]` clicks per report; Report 3: `r stats[1,1]`+/-`r stats[1,2]` clicks per report; p`r t$p.value`) and the level 2 course (Report 1: `r stats2[2,1]`+/-`r stats2[2,2]` clicks per report; Report 2: `r stats2[1,1]`+/-`r stats2[1,2]` clicks per report; p`r t2$p.value`).
+
+
+```{r, echo=FALSE}
+
+stats = stats.mean.sem(AcP, 5, 6)
+stats = round(stats,1)
+#stats
+
+df11 = AcP %>% filter(course == "Level 1", sem == "Semester 1")
+t11 = with(df11, aov(Final.Grade ~ report))
+#summary(t11)
+p11 = ap(t11)
+tuk11 = TukeyHSD(t11)
+#tuk11
+
+df12 = AcP %>% filter(course == "Level 1", sem == "Semester 2")
+t12 = with(df12, aov(Final.Grade ~ report))
+#summary(t12)
+p12 = ap(t12)
+tuk12 = TukeyHSD(t12)
+#tuk12
+
+df2 = AcP %>% filter(course == "Level 2")
+t2 = with(df2, t.test(Final.Grade ~ report))
+#t2
+t2$p.value = tp(t2)
+
+df3 = AcP %>% filter(report == "Report 3" | project == "BIOM2011Sem1Report 2" | project == "BIOM2011Sem2Report 2")
+t3 = with(df3, t.test(Final.Grade ~ course))
+#t3
+t3$p.value = tp(t3)
+
+df4 = AcP %>% filter(course == "Level 1")
+t4 = with(df4, aov(Final.Grade ~ project))
+#summary(t4)
+p4 = ap(t4)
+tuk4 = TukeyHSD(t4)
+#tuk4
+
+#rownames(tuk4[[1]])
+#c = length(rownames(tuk4[[1]]))
+#x = c*3+1
+#y = x+c-1
+p4 = round(tuk4[[1]][72],2)
+p5 = round(tuk4[[1]][65],2)
+if(p5 <= 0.001) { p5 = "<0.001" }
+#p5
+
+
+```
+
+
+
+##Academic Performance  
+Both first and second year students showed a steady improvement in their performance on each report within each semester (Figure 10), with the average achievement on each subsequent task being significantly higher than the preceding task (Level 1 Semester 1: p`r p11`; Semester 2: p`r p12`; Level 2: p`r t2$p.value`). It should be noted that the performance on the first task in the second year course was significantly lower than that of the final report in the first year course (p`r t3$p.value`). Potentially this reflects the increase in assessment complexity and expectations across the year levels (Colthorpe et al. 2015). Interestingly, the average performance for the first year students in each semester was comparable between the summative tasks (p=`r p4`), but their performance on the formative task in semester 1 was lower than any summative tasks, regardless of semester (p`r p5`; Figure 10). This suggests that students in semester 2 are not disadvantaged by the lack of the formative task, potentially the experience they have gained in completing a semester prior to commencing this course has been an effective substitute for any learning gains from the formative task.
+
+
+
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
 default.plot()
@@ -656,6 +749,11 @@ temp = as.data.frame(table(AcP[,7], AcP[,9]))
 
 
 Figure 10: Overall final mark for reports in the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM mark that students achieved for each report, as a percentage.
+
+
+When student performance was compared to the extent to which they viewed their feedback, a number of differences were apparent both in terms of the average mark received on any given report and on changes between reports. In both first and second year students, all categories of students demonstrated significant, sequential improvements in average marks as they progressed between reports, with two exceptions (Figure X & X). Students who only opened their feedback for a short duration showed no significant improvement in performance between reports, and those first year students who did not open their feedback improved between the first and second summative reports but then did not improve further (Figure X). Generally, students who had their feedback open for medium or long durations had significantly higher marks than students who opened their feedback for short durations or those who did not open their feedback, with the long durations also out-performing the medium durations in later reports (Figure X). While the overall improvement in performance across subsequent tasks cannot be attributed entirely to feedback, as the experience of completing one task is expected to contribute to a subsequent, similar task (ref), the relationships between differing durations of opening of reports and academic achievement does suggest that prolonged use of feedback is beneficial. Students who spend longer with their feedback open are more likely to have greater improvements in achievement on subsequent tasks than those who never open or only open their feedback briefly. 
+
+*We also investigated whether there were relationships between students’ academic performance, their interactions with the feedback and mark provision of feedback. Pioneering work in learning analytics using social networking analysis to investigate the interactions amongst students and staff in discussion boards indicates that academics interact more with high achieving students than with low achieving students (Dawson 2010; Dawson, Tan, and McWilliam 2011), In contrast, our analyses suggest that markers provide more feedback to students who perform poorly on their first report (Figure X). However this pattern breaks down for subsequent reports, where students who perform very poorly on report 2 receive the lowest amount of feedback (Figure X).*
 
 
 ```{r, echo=FALSE}
