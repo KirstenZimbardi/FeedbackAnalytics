@@ -116,4 +116,9 @@ t.x = aov(Final.Grade ~ report * Report0.open.bin, data = R0.open.m)
 summary(t.x)
 tuk.x = TukeyHSD(t.x)
 tuk.x
+tuk.x[[3]][1:3]
+a = (length(tuk.x[[3]])/4)*3
+#b = seq(a, length(tuk.x[[3]], ))
+b = a + c(1:3, 16:17, 30)
+tuk.x[[3]][b]
 ```
