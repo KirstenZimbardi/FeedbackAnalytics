@@ -751,6 +751,54 @@ temp = as.data.frame(table(AcP[,7], AcP[,9]))
 Figure 10: Overall final mark for reports in the level 1 course (Report 0: n=`r temp[1,3]`, Report 1: n=`r temp[3,3]`, Report 2: n=`r temp[5,3]`, Report 3: n=`r temp[7,3]`) and for the level 2 course (Report 1: n=`r temp[4,3]`, Report 2: n=`r temp[6,3]`). Data are expressed as the mean+/-SEM mark that students achieved for each report, as a percentage.
 
 
+```{r, echo=FALSE}
+
+#df = dcast(AcPFbUbins, StudentID + project ~ open.bin, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + course + sem + open.bin ~ report, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + open.bin ~ project, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + course + sem + open.bin ~ report, value.var = "Final.Grade")
+#head(df)
+#df[which(df$StudentID == "S8013163"),]
+
+df = dcast(AcPFbUbins, StudentID + project + open.bin ~ report, value.var = "Final.Grade")
+head(df)
+
+df2 = melt(df)
+head(df2)
+df2 = remover(df2, 5)
+head(df2)
+
+df2 = rename(df2, 4:5, c("report", "Final.Grade"))
+df3 = dcast(df2, StudentID ~ report, value.var = "Final.Grade", sum, na.rm=T)
+head(df3)
+
+df4 = df3[(which(df3[,3] <= 100)),]
+head(df4)
+max(df4[,4])
+df4 = df4[(which(df4[,4] <= 100)),]
+head(df4)
+write.csv(df4, "StudentFinalGradeSummary.csv", row.names = F)
+
+R0bins = AcPFbUbins %>% filter(project == "BIOL1040Sem1Report 0")
+R0bins = R0bins %>% select(StudentID, open.bin)
+R0.open = merge(df4, R0bins)
+head(R0.open)
+head(df4)
+R0.open = rename(R0.open, 6, "Report0.open.bin")
+
+stats = stats.mean.sem(R0.open, 3, 6)
+stats = round(stats,1)
+stats
+
+df11 = AcP %>% filter(course == "Level 1", sem == "Semester 1")
+t11 = with(df11, aov(Final.Grade ~ report))
+#summary(t11)
+p11 = ap(t11)
+tuk11 = TukeyHSD(t11)
+#tuk11
+
+```
+
 When student performance was compared to the extent to which they viewed their feedback, a number of differences were apparent both in terms of the average mark received on any given report and on changes between reports. In both first and second year students, all categories of students demonstrated significant, sequential improvements in average marks as they progressed between reports, with two exceptions (Figure X & X). Students who only opened their feedback for a short duration showed no significant improvement in performance between reports, and those first year students who did not open their feedback improved between the first and second summative reports but then did not improve further (Figure X). Generally, students who had their feedback open for medium or long durations had significantly higher marks than students who opened their feedback for short durations or those who did not open their feedback, with the long durations also out-performing the medium durations in later reports (Figure X). While the overall improvement in performance across subsequent tasks cannot be attributed entirely to feedback, as the experience of completing one task is expected to contribute to a subsequent, similar task (ref), the relationships between differing durations of opening of reports and academic achievement does suggest that prolonged use of feedback is beneficial. Students who spend longer with their feedback open are more likely to have greater improvements in achievement on subsequent tasks than those who never open or only open their feedback briefly. 
 
 *We also investigated whether there were relationships between students’ academic performance, their interactions with the feedback and mark provision of feedback. Pioneering work in learning analytics using social networking analysis to investigate the interactions amongst students and staff in discussion boards indicates that academics interact more with high achieving students than with low achieving students (Dawson 2010; Dawson, Tan, and McWilliam 2011), In contrast, our analyses suggest that markers provide more feedback to students who perform poorly on their first report (Figure X). However this pattern breaks down for subsequent reports, where students who perform very poorly on report 2 receive the lowest amount of feedback (Figure X).*
