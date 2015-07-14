@@ -88,86 +88,32 @@ R0.open = merge(df4, R0bins)
 #head(R0.open)
 #head(df4)
 R0.open = rename(R0.open, 6, "Report0.open.bin")
-```
-
-##Based on open bins for Report 0  
-What are the marks for Report 0 and do they differ between open bin categories?  
-```{r, echo=FALSE}
-statsR11 = stats.mean.sem(R0.open, 2, 6)
-statsR11 = round(statsR11,1)
-statsR11
-
-df11 = AcP %>% filter(course == "Level 1", sem == "Semester 1")
-tR11 = aov(R0.open[,2] ~ R0.open[,6])
-summary(tR11)
-#pR11 = ap(tR11)
-tukR11 = TukeyHSD(tR11)
-tukR11
 
 R0.open.m = melt(R0.open)
 #head(R0.open.m)
+R0.open.m = rename(R0.open.m, 3:4, c("report", "Final.Grade"))
 ```
 
+#Based on open bins for Report 0  
 ##For each open bin category, are there differences between report marks?  
-stat's for unopened  
+all stat's in one block   
 ```{r, echo=FALSE}
 
-dfx = subset(R0.open.m, Report0.open.bin == "unopened")
-stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = stats.mean.sem(R0.open.m, 4, 2:3)
 stats.x = round(stats.x,1)
 stats.x
 
-t.x = aov(dfx[,4] ~ dfx[,3])
+t.x = aov(Final.Grade ~ report + Report0.open.bin, data = R0.open.m)
 summary(t.x)
-#p.x = ap(t.x)
 tuk.x = TukeyHSD(t.x)
 tuk.x
 ```
 
-stat's for short  
+with every possible comparison all done at once  
+*NB - in this table we would only be interested in long vs long, med vs med etc*  
 ```{r, echo=FALSE}
-
-dfx = subset(R0.open.m, Report0.open.bin == "short")
-stats.x = stats.mean.sem(dfx, 4, 3)
-stats.x = round(stats.x,1)
-stats.x
-
-t.x = aov(dfx[,4] ~ dfx[,3])
+t.x = aov(Final.Grade ~ report * Report0.open.bin, data = R0.open.m)
 summary(t.x)
-#p.x = ap(t.x)
 tuk.x = TukeyHSD(t.x)
 tuk.x
 ```
-
-stat's for medium  
-```{r, echo=FALSE}
-
-dfx = subset(R0.open.m, Report0.open.bin == "medium")
-stats.x = stats.mean.sem(dfx, 4, 3)
-stats.x = round(stats.x,1)
-stats.x
-
-t.x = aov(dfx[,4] ~ dfx[,3])
-summary(t.x)
-#p.x = ap(t.x)
-tuk.x = TukeyHSD(t.x)
-tuk.x
-```
-
-stat's for long  
-```{r, echo=FALSE}
-
-dfx = subset(R0.open.m, Report0.open.bin == "long")
-stats.x = stats.mean.sem(dfx, 4, 3)
-stats.x = round(stats.x,1)
-stats.x
-
-t.x = aov(dfx[,4] ~ dfx[,3])
-summary(t.x)
-#p.x = ap(t.x)
-tuk.x = TukeyHSD(t.x)
-tuk.x
-
-```
-
-
