@@ -1,0 +1,173 @@
+---
+title: "UQM paper - relating report marks to open bins"
+author: "KZ"
+date: "14 July 2015"
+output: html_document
+---
+
+A quick and dirty output for now - cleaner code will be inserted into main paper page later...  
+
+
+```{r, echo=FALSE, message=FALSE}
+#clean workspace
+rm(list=ls())
+
+#packages
+require(reshape2)
+require(dplyr)
+
+#load functions
+source("UQM functions.R")
+source("HelperFunctions.R")
+
+ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
+projects()
+graphs()
+
+
+#load data
+folder = "./Data Stage 2/"
+#demog = uqm.csv("demog")
+AcP = uqm.csv("AcPdf")
+#FbPsum = uqm.csv("FbPsummary")
+#FbP = uqm.csv("FbPdf")
+#FbU = uqm.csv("FbUdf")
+AcPFbUbins = uqm.csv("AcPFbUbins")
+#SubID.index = uqm.csv("SubIDindex")
+#mt = uqm.csv("MarkingTimes")
+
+#Generalising
+#demog = gen(demog, 13, 14)
+AcP = gen(AcP, 7, 8)
+#FbP = gen(FbP, 15, 16)
+#FbU = gen(FbU, 22, 23)
+AcPFbUbins = gen(AcPFbUbins, 7, 8)
+#SubID.index = gen(SubID.index, 4, 5)
+#mt = gen(mt, 7, 8)
+#FbPsum does not inlude project details, need to merge in from AcP
+#FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
+#FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
+#ignoring this for now and just generating Fig 2-4 based on data that is in FbPsummary.csv
+#FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
+
+```
+
+
+
+```{r, echo=FALSE}
+
+#df = dcast(AcPFbUbins, StudentID + project ~ open.bin, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + course + sem + open.bin ~ report, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + open.bin ~ project, value.var = "Final.Grade")
+#df = dcast(AcPFbUbins, StudentID + course + sem + open.bin ~ report, value.var = "Final.Grade")
+#head(df)
+#df[which(df$StudentID == "S8013163"),]
+
+df = dcast(AcPFbUbins, StudentID + project + open.bin ~ report, value.var = "Final.Grade")
+#head(df)
+
+df2 = melt(df)
+#head(df2)
+df2 = remover(df2, 5)
+#head(df2)
+
+df2 = rename(df2, 4:5, c("report", "Final.Grade"))
+df3 = dcast(df2, StudentID ~ report, value.var = "Final.Grade", sum, na.rm=T)
+#head(df3)
+
+df4 = df3[(which(df3[,3] <= 100)),]
+#head(df4)
+#max(df4[,4])
+df4 = df4[(which(df4[,4] <= 100)),]
+#head(df4)
+#write.csv(df4, "StudentFinalGradeSummary.csv", row.names = F)
+
+R0bins = AcPFbUbins %>% filter(project == "BIOL1040Sem1Report 0")
+R0bins = R0bins %>% select(StudentID, open.bin)
+R0.open = merge(df4, R0bins)
+#head(R0.open)
+#head(df4)
+R0.open = rename(R0.open, 6, "Report0.open.bin")
+```
+
+##Based on open bins for Report 0  
+What are the marks for Report 0 and do they differ between open bin categories?  
+```{r, echo=FALSE}
+statsR11 = stats.mean.sem(R0.open, 2, 6)
+statsR11 = round(statsR11,1)
+statsR11
+
+df11 = AcP %>% filter(course == "Level 1", sem == "Semester 1")
+tR11 = aov(R0.open[,2] ~ R0.open[,6])
+summary(tR11)
+#pR11 = ap(tR11)
+tukR11 = TukeyHSD(tR11)
+tukR11
+
+R0.open.m = melt(R0.open)
+#head(R0.open.m)
+```
+
+##For each open bin category, are there differences between report marks?  
+stat's for unopened  
+```{r, echo=FALSE}
+
+dfx = subset(R0.open.m, Report0.open.bin == "unopened")
+stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = round(stats.x,1)
+stats.x
+
+t.x = aov(dfx[,4] ~ dfx[,3])
+summary(t.x)
+#p.x = ap(t.x)
+tuk.x = TukeyHSD(t.x)
+tuk.x
+```
+
+stat's for short  
+```{r, echo=FALSE}
+
+dfx = subset(R0.open.m, Report0.open.bin == "short")
+stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = round(stats.x,1)
+stats.x
+
+t.x = aov(dfx[,4] ~ dfx[,3])
+summary(t.x)
+#p.x = ap(t.x)
+tuk.x = TukeyHSD(t.x)
+tuk.x
+```
+
+stat's for medium  
+```{r, echo=FALSE}
+
+dfx = subset(R0.open.m, Report0.open.bin == "medium")
+stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = round(stats.x,1)
+stats.x
+
+t.x = aov(dfx[,4] ~ dfx[,3])
+summary(t.x)
+#p.x = ap(t.x)
+tuk.x = TukeyHSD(t.x)
+tuk.x
+```
+
+stat's for long  
+```{r, echo=FALSE}
+
+dfx = subset(R0.open.m, Report0.open.bin == "long")
+stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = round(stats.x,1)
+stats.x
+
+t.x = aov(dfx[,4] ~ dfx[,3])
+summary(t.x)
+#p.x = ap(t.x)
+tuk.x = TukeyHSD(t.x)
+tuk.x
+
+```
+
+

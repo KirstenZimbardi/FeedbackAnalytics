@@ -786,16 +786,35 @@ head(R0.open)
 head(df4)
 R0.open = rename(R0.open, 6, "Report0.open.bin")
 
-stats = stats.mean.sem(R0.open, 3, 6)
-stats = round(stats,1)
-stats
+statsR11 = stats.mean.sem(R0.open, 2, 6)
+statsR11 = round(statsR11,1)
+statsR11
 
 df11 = AcP %>% filter(course == "Level 1", sem == "Semester 1")
-t11 = with(df11, aov(Final.Grade ~ report))
-#summary(t11)
-p11 = ap(t11)
-tuk11 = TukeyHSD(t11)
-#tuk11
+tR11 = aov(R0.open[,2] ~ R0.open[,6])
+summary(tR11)
+pR11 = ap(tR11)
+tukR11 = TukeyHSD(tR11)
+tukR11
+
+R0.open.m = melt(R0.open)
+head(R0.open.m)
+
+
+dfx = subset(R0.open.m, Report0.open.bin == "unopened")
+stats.x = stats.mean.sem(dfx, 4, 3)
+stats.x = round(stats.x,1)
+stats.x
+
+t.x = aov(dfx[,4] ~ dfx[,3])
+summary(t.x)
+p.x = ap(t.x)
+tuk.x = TukeyHSD(t.x)
+tuk.x
+
+
+
+
 
 ```
 
