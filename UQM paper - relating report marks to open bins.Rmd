@@ -63,17 +63,10 @@ AcPFbUbins = gen(AcPFbUbins, 7, 8)
 #head(df)
 #df[which(df$StudentID == "S8013163"),]
 
-df = dcast(AcPFbUbins, StudentID + project + open.bin ~ report, value.var = "Final.Grade")
-#head(df)
-
-df2 = melt(df)
+df2 = AcPFbUbins %>% select(StudentID, project, open.bin, report, Final.Grade)
 #head(df2)
-df2 = remover(df2, 5)
-#head(df2)
-
-df2 = rename(df2, 4:5, c("report", "Final.Grade"))
 df3 = dcast(df2, StudentID ~ report, value.var = "Final.Grade", sum, na.rm=T)
-#head(df3)
+head(df3)
 
 df4 = df3[(which(df3[,3] <= 100)),]
 #head(df4)
@@ -84,14 +77,13 @@ df4 = df4[(which(df4[,4] <= 100)),]
 
 R0bins = AcPFbUbins %>% filter(project == "BIOL1040Sem1Report 0")
 R0bins = R0bins %>% select(StudentID, open.bin)
-R0.open = merge(df4, R0bins)
-#head(R0.open)
-#head(df4)
-R0.open = rename(R0.open, 6, "Report0.open.bin")
+df5 = merge(df4, R0bins)
+df5 = rename(df5, 6, "Report0.open.bin")
 
-R0.open.m = melt(R0.open)
-#head(R0.open.m)
-R0.open.m = rename(R0.open.m, 3:4, c("report", "Final.Grade"))
+df5m = melt(df5)
+head(df5m)
+df5m = rename(df5m, 3:4, c("report", "Final.Grade"))
+R0.open = df5m
 ```
 
 #Based on open bins for Report 0  
@@ -99,11 +91,11 @@ R0.open.m = rename(R0.open.m, 3:4, c("report", "Final.Grade"))
 all stat's in one block   
 ```{r, echo=FALSE}
 
-stats.x = stats.mean.sem(R0.open.m, 4, 2:3)
+stats.x = stats.mean.sem(R0.open, 4, 2:3)
 stats.x = round(stats.x,1)
 stats.x
 
-t.x = aov(Final.Grade ~ report + Report0.open.bin, data = R0.open.m)
+t.x = aov(Final.Grade ~ report + Report0.open.bin, data = R0.open)
 summary(t.x)
 tuk.x = TukeyHSD(t.x)
 tuk.x
@@ -112,7 +104,7 @@ tuk.x
 with every possible comparison all done at once  
 *NB - in this table we would only be interested in long vs long, med vs med etc*  
 ```{r, echo=FALSE}
-t.x = aov(Final.Grade ~ report * Report0.open.bin, data = R0.open.m)
+t.x = aov(Final.Grade ~ report * Report0.open.bin, data = R0.open)
 summary(t.x)
 tuk.x = TukeyHSD(t.x)
 tuk.x
