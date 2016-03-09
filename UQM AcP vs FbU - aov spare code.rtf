@@ -1,0 +1,126 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 df = dcast(AcPFbUbins, StudentID + project + open.bin ~ report, value.var = "Final.Grade")\
+#head(df)\
+\
+open.bins = c("unopened", "short", "medium", "long")\
+\
+#BIOL1040 Sem 1\
+df = subset(AcPFbUbins, report == "Report 0")\
+df = df[,c(2,5,10:11)]\
+\
+#default.plot()\
+#with(df, boxplot(Final.Grade ~ open.bin))\
+\
+df[,4] = factor(df[,4], open.bins)\
+\
+#default.plot()\
+#plot.mean.sem(df, 2, 4, 100, kz.col, open.bins, "Report mark (%)")\
+#legend.top(open.bins,  kz.col)\
+\
+df2 = df[,c(1,4,2)]\
+df2 = rename(df2, 3, "Report0.Grade")\
+\
+df2 = merge(df2, subset(AcPFbUbins, report == "Report 1")[,c(2,5)], by="StudentID")\
+df2 = rename(df2, 4, "Report1.Grade")\
+\
+df2 = merge(df2, subset(AcPFbUbins, report == "Report 2")[,c(2,5)], by="StudentID")\
+df2 = rename(df2, 5, "Report2.Grade")\
+\
+df2 = merge(df2, subset(AcPFbUbins, report == "Report 3")[,c(2,5)], by="StudentID")\
+df2 = rename(df2, 6, "Report3.Grade")\
+\
+df3 = melt(df2)\
+#head(df3)\
+#with(df3, tapply(value, open.bin, mean))\
+\
+stats = stats.mean.sem(df3, 4, 2:3)\
+stats = round(stats,1)\
+#stats\
+\
+stats.R0 = stats.mean.sem.n(df2, 3, 2)\
+stats.R1 = stats.mean.sem.n(df2, 4, 2)\
+stats.R2 = stats.mean.sem.n(df2, 5, 2)\
+stats.R3 = stats.mean.sem.n(df2, 6, 2)\
+\
+stats.R0[,4] = "Report 0"\
+stats.R1[,4] = "Report 1"\
+stats.R2[,4] = "Report 2"\
+stats.R3[,4] = "Report 3"\
+\
+stats.R0[,5] = row.names(stats.R0)\
+stats.R1[,5] = row.names(stats.R1)\
+stats.R2[,5] = row.names(stats.R2)\
+stats.R3[,5] = row.names(stats.R3)\
+\
+stats.R = rbind(stats.R0, stats.R1, stats.R2, stats.R3)\
+stats.R = rename(stats.R, 4:5, c("report", "R0bin"))\
+\
+stats.R = stats.R[,c(4,5,1:3)]\
+row.names(stats.R) = 1:nrow(stats.R)\
+\
+##2 way ANOVA\
+\
+#df4 = AcP %>% filter(course == "Level 1", sem == "Semester 1")\
+t = aov(df3[,4] ~ df3[,2]*df3[,3])\
+#summary(t)\
+p = ap(t)\
+tuk = TukeyHSD(t)\
+tuk2 = as.data.frame(tuk[[3]])\
+tuk2[,5] = row.names(tuk2)\
+\
+\
+pos1 = gregexpr(":", tuk2[,5])\
+pos2 = NULL\
+pos3 = NULL\
+for (l in 1:length(pos1)) \{\
+  pos2[l] = pos1[[l]][1]\
+  pos3[l] = pos1[[l]][2]\
+\}\
+\
+pos1.2 = gregexpr("-", tuk2[,5])\
+pos2.2 = NULL\
+pos3.2 = NULL\
+for (l in 1:length(pos1)) \{\
+  pos2.2[l] = pos1.2[[l]][1]\
+  pos3.2[l] = nchar(tuk2[l,5])\
+\}\
+tuk2[,6] = substr(tuk2[,5], 1, (pos2-1))\
+tuk2[,7] = substr(tuk2[,5], (pos2+1), (pos2.2-1))\
+tuk2[,8] = substr(tuk2[,5], (pos2.2+1), (pos3-1))\
+tuk2[,9] = substr(tuk2[,5], (pos3+1), pos3.2)\
+\
+tuk2[,10] = tuk2[,4] < (0.05/120)\
+row.names(tuk2) = 1:nrow(tuk2)\
+\
+#tuk2[which(tuk2[,10] == TRUE),c(4,6:10)]\
+tuk2 = tuk2[,c(8,9,6,7,4,10)]\
+tuk2 = rename(tuk2, 1:6, c("R0binA", "reportA", "R0binB", "reportB", "p-adj", "sig"))\
+#table(tuk2[,6])\
+tuk3 = subset(tuk2, sig == TRUE)\
+\
+##outputs\
+\
+subset(tuk2, R0binA == "unopened" & R0binB == "unopened")\
+subset(tuk3, R0binA == "unopened" & R0binB == "unopened")\
+subset(stats.R, R0bin == "unopened")\
+#so if they did not open R0, regardless of what they did later, they only improved from R1 to R2 and then plateued\
+\
+subset(tuk2, R0binA == "short" & R0binB == "short")\
+subset(tuk3, R0binA == "short" & R0binB == "short")\
+subset(stats.R, R0bin == "short")\
+#if they looked at R0 for less than 1 minute then they never improved (there are 26 students in this category so not trivial or too small for stats - altho R3 may be a jumpt up from R0 and R1 if the p-adjusted should be trusted at 0.05 instead of 0.05/120)\
+\
+subset(tuk2, R0binA == "medium" & R0binB == "medium")\
+subset(tuk3, R0binA == "medium" & R0binB == "medium")\
+subset(stats.R, R0bin == "medium")\
+#all sig improvements except R0 to R1 and R2 to R3\
+\
+subset(tuk2, R0binA == "long" & R0binB == "long")\
+subset(tuk3, R0binA == "long" & R0binB == "long")\
+subset(stats.R, R0bin == "long")\
+#all sig improvements except R2 to R3}

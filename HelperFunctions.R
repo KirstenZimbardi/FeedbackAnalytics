@@ -117,6 +117,17 @@ stats.mean.sem = function(df, dv, iv)
   return(stats)
 }
 
+stats.mean.sem.n = function(df, dv, iv)
+{
+  means = tapply(df[,dv], df[,iv], mean, na.rm=T)
+  st.dev = tapply(df[,dv], df[,iv], sd, na.rm=T)
+  n = tapply(df[,dv], df[,iv], length)
+  SEM = st.dev/sqrt(n)
+  stats = as.data.frame(means)
+  stats = cbind(stats, SEM, n)
+  return(stats)
+}
+
 dep.variables = function()
 {
   criteria = "Hypoth,Methods.writing,Methods.details,Methods.design,Results.text,Results.figures,Results.legends,Disc.knowlede,Disc.InterpFindings,Disc.Evidence,Refs,Writing"

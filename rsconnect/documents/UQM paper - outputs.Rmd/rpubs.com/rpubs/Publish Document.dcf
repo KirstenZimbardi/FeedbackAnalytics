@@ -1,7 +1,7 @@
 name: Publish Document
 account: rpubs
 server: rpubs.com
-bundleId:
-        https://api.rpubs.com/api/v1/document/91652/ae5dc4dbb6ad44b68ddd992d0ce0397d
-url: http://rpubs.com/kirstenz/91652
-when: 1436836599.25452
+appId: https://api.rpubs.com/api/v1/document/159555/cd0efebdb2834b14964de4bdfcd2dde3
+bundleId: https://api.rpubs.com/api/v1/document/159555/cd0efebdb2834b14964de4bdfcd2dde3
+url: http://rpubs.com/publish/claim/159555/a637922a76194fdf85bfba873fb1cf82
+when: 1457494825.72009
