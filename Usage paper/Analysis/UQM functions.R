@@ -20,9 +20,9 @@ graphs = function(...)
     report.names[i] = substr(project.names.formative[i], 13,20)
   report.names <<- report.names
   
-  kz.col = c("cyan1", "chartreuse", "yellow", "darkorange")
+  kz.col = c("#CAFF70", "#66CD00", "#1874CD", "#000080")
   kz.col <<-  kz.col
-  report.col = c(rep.int("cyan1", 4), rep.int("chartreuse", 3), rep.int("yellow", 2), rep.int("darkorange", 2))
+  report.col = c(rep.int("#CAFF70", 4), rep.int("#66CD00", 3), rep.int("#1874CD", 2), rep.int("#000080", 2))
   report.col <<- report.col
   
   sem.names = c("Level 1 Sem 1", "Level 1 Sem 2", "Level 2 Sem 1", "Level 2 Sem 2")

@@ -406,10 +406,10 @@ Figure 3: Number of words provided in each audio and text annotation for level 1
 
 ```{r, echo=FALSE, fig.width=10, fig.height=5}
 
-plot.topper.dual()
+plot.topper.dual.longY()
 
-plot.mean.sem(FbP.AcP, 8, 14, 1700, report.col, report.names, "Number of words in audio annotations  \n per report")
-plot.mean.sem(FbP.AcP, 9, 14, 170, report.col, report.names, "Number of words in typed annotations  \n per report")
+plot.mean.sem(FbP.AcP, 8, 14, 1700, report.col, report.names, "Number of words in audio annotations \n per report")
+plot.mean.sem(FbP.AcP, 9, 14, 170, report.col, report.names, "Number of words in typed annotations \n per report")
 
 legend.top(sem.names,  kz.col)
 
@@ -780,19 +780,39 @@ temp2 = rbind(k[[1]][[1]][[3]], k[[1]][[2]][[3]], k[[1]][[3]][[3]], k[[1]][[4]][
 
 open.bins = c("unopened", "short", "intermediate", "long")
 #open.col = c("#FFFFFF", "#87CEFF", "#00BFFF", "#6495ED", "#4069E1", "#3D59AB")
-open.col = c("#FFFFFF", "#87CEFA", "#6495ED", "#3D59AB")
+#open.col = c("#FFFFFF", "#87CEFA", "#6495ED", "#3D59AB")
+open.col = c("#FFFFE6FF", "#FFDB00FF", "#FF8000FF", "#CD3700")
+
 
 #stats.R.alt = stats.R[c(seq(1,16,4), seq(2,16,4), seq(3,16,4), seq(4,16,4)),]
 
+#default.plot()
+#bars <- barplot(temp2$means, names = "", ylab = "Report mark (%)",  ylim =c(0,100), col = c(rep(open.col[1],4), rep(open.col[2],4), rep(open.col[3],4), rep(open.col[4],4)), las = 2)
+#for (i in 1:length(bars)) 
+#  {
+#    arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]+temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
+#    arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]-temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
+#}
+#axis(1, at = bars, labels = temp2$report, las = 2)
+#legend.top(open.bins,  open.col)
+
 default.plot()
 bars <- barplot(temp2$means, names = "", ylab = "Report mark (%)",  ylim =c(0,100), col = c(rep(open.col[1],4), rep(open.col[2],4), rep(open.col[3],4), rep(open.col[4],4)), las = 2)
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=1, angle=c(45), density=c(rep(0,4), rep(5,4), rep(0,8)))
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=0, angle=45, density=c(rep(0,8), rep(10,4), rep(15,4)))
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=0, angle=135, density=c(rep(0,12), rep(15,4)))
 for (i in 1:length(bars)) 
   {
     arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]+temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
     arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]-temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
 }
 axis(1, at = bars, labels = temp2$report, las = 2)
-legend.top(open.bins,  open.col)
+legend.top(open.bins, open.col)
+legend.top.hatch(open.bins, open.col, 1, 45, c(0,5,0,0))
+legend.top.hatch(open.bins, open.col, 0, 45, c(0,0,10,15))
+legend.top.hatch(open.bins, open.col, 0, 135, c(0,0,0,15))
+
+
 
 k[[1]][[2]][[2]]
 

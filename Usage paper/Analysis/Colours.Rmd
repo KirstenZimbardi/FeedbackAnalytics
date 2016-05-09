@@ -1,0 +1,144 @@
+---
+title: "Colours"
+output: html_document
+---
+
+blues  
+```{r, echo=FALSE}
+barplot(1:10,20, col = blues9)
+
+barplot(1:20,20, col = heat.colors(20))
+
+hc = c("#FFFFB3FF", "#FFDB00FF", "#FF5B00FF", "#FF0000FF")
+
+barplot(1:10,20, col = rainbow(10))
+
+palette()   
+
+```
+
+blues for fig 10  
+```{r, echo=FALSE}
+#open.col = c("#FFFFFF", "#87CEFF", "#00BFFF", "#6495ED", "#4069E1", "#3D59AB")
+open.col = c("#FFFFFF", "#87CEFA", "#6495ED", "#3D59AB")
+
+barplot(1:10,20, col = open.col)
+```
+
+not working  
+```{r,echo=FALSE}
+
+mycol = c("aliceblue", "cadetblue1", "yellowgreen", "springgreen3", "springgreen4")
+palette("aliceblue")
+palette("aliceblue" "cadetblue1" "yellowgreen" "springgreen3" "springgreen4")
+```
+
+
+
+new colours  
+```{r, echo=FALSE}
+allcol = colors()
+mycol = allcol[c(2,39,239,463,464)]
+
+barplot(1:10,20, col = mycol)
+
+```
+
+reset palette  
+```{r, echo=FALSE}
+palette("default")
+```
+
+
+hatching from net  
+```{r, echo=FALSE}
+set.seed(1)
+mat <- matrix(runif(4*7, min=0, max=10), 7, 4)
+rownames(mat) <- 1:4
+colnames(mat) <- LETTERS[1:4]
+ylim <- range(mat)*c(1,1.25)
+barplot(mat, beside=TRUE, ylim=ylim, col=1, lwd=1:2, angle=45, density=seq(5,35,5))
+barplot(mat, beside=TRUE, ylim=ylim, col=1, lwd=1:2, angle=135, density=seq(5,35,5))
+barplot(mat, beside=TRUE, ylim=ylim, col=1, lwd=1:2, angle=c(45, 135), density=seq(5,35,5))
+barplot(mat, beside=TRUE, ylim=ylim, col=1, lwd=1:2, angle=45, density=seq(5,35,5))
+barplot(mat, add=TRUE, beside=TRUE, ylim=ylim, col=1, lwd=1:2, angle=135, density=seq(5,35,5))
+
+legend("top", legend=1:7, ncol=7, fill=TRUE, cex=1.5, col=1, angle=45, density=seq(5,35,5))
+legend("top", legend=1:7, ncol=7, fill=TRUE, cex=1.5, col=1, angle=c(45, 135), density=seq(5,35,5))
+```
+
+adapting  
+```{r, echo=FALSE}
+
+default.plot()
+bars <- barplot(temp2$means, names = "", ylab = "Report mark (%)",  ylim =c(0,100), col=mycol, angle=45, density=seq(0,32,2), las = 2)
+
+barplot(temp2$means, names = "", ylab = "Report mark (%)",  ylim =c(0,100), col=c(rep(open.col[1],4), rep(open.col[2],4), rep(open.col[3],4), rep(open.col[4],4)), las = 2)
+barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=1, angle=c(45), density=c(0,5,0,10))
+
+#col = c(rep(open.col[1],4), rep(open.col[2],4), rep(open.col[3],4), rep(open.col[4],4)), 
+
+```
+
+pulling colours and hatching together  
+```{r, echo=FALSE}
+
+mycol = c("#F0F8FF", "#76EEC6", "#EE7600", "#CD3333")
+#mycol = c("#00FFFF", "#76EEC6", "#EE7600", "#CD3333")
+mycol = c("#BFEFFF", "#90EE90", "#EE7600", "#8B1A1A")
+
+mycol = c("#CAFF70", "#76EEC6", "#1874CD", "#000080")
+mycol = c("#CAFF70", "#66CD00", "#1874CD", "#000080")
+
+
+
+hc = c("#FFFFE6FF", "#FFDB00FF", "#FF8000FF", "#FF0000FF")
+hc = c("#FFFFE6FF", "#FFDB00FF", "#FF8000FF", "#CD3700")
+
+# maybe this instead of blues so can use white for level 1 sem 1e
+default.plot()
+plot.mean.sem(AcP, 5, 6, 100, c(rep(hc[1],4), rep(hc[2],3), rep(hc[3],2), rep(hc[4],2)), report.names, "Report mark (%)")
+legend.top(sem.names,  hc)
+
+default.plot()
+plot.mean.sem(AcP, 5, 6, 100, c(rep(mycol[1],4), rep(mycol[2],3), rep(mycol[3],2), rep(mycol[4],2)), report.names, "Report mark (%)")
+legend.top(sem.names,  mycol)
+
+```
+
+again  
+```{r, echo=FALSE}
+
+open.col = c("#FFFFE6FF", "#FFDB00FF", "#FF8000FF", "#CD3700")
+#stats.R.alt = stats.R[c(seq(1,16,4), seq(2,16,4), seq(3,16,4), seq(4,16,4)),]
+
+legend.top.hatch = function(leg.names, bar.col, c, a, d)
+{
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+  legend("top", legend = leg.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = TRUE , col = c, angle=a, density=d, bty="n")
+}
+
+default.plot()
+bars <- barplot(temp2$means, names = "", ylab = "Report mark (%)",  ylim =c(0,100), col = c(rep(open.col[1],4), rep(open.col[2],4), rep(open.col[3],4), rep(open.col[4],4)), las = 2)
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=1, angle=c(45), density=c(rep(0,4), rep(5,4), rep(0,8)))
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=0, angle=45, density=c(rep(0,8), rep(10,4), rep(15,4)))
+bars <- barplot(temp2$means, names = "", ylab = "", las=2, add=TRUE, col=0, angle=135, density=c(rep(0,12), rep(15,4)))
+for (i in 1:length(bars)) 
+  {
+    arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]+temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
+    arrows(bars[i],temp2$means[i],bars[i],temp2$means[i]-temp2$SEM[i],angle=90,length=.09,lwd = 1.5)
+}
+axis(1, at = bars, labels = temp2$report, las = 2)
+legend.top(open.bins, open.col)
+legend.top.hatch(open.bins, open.col, 1, 45, c(0,5,0,0))
+legend.top.hatch(open.bins, open.col, 0, 45, c(0,0,10,15))
+legend.top.hatch(open.bins, open.col, 0, 135, c(0,0,0,15))
+
+
+#legend("top", legend=1:7, ncol=7, fill=TRUE, cex=1.5, col=1, angle=45, density=seq(5,35,5))
+#legend("top", legend=1:7, ncol=7, fill=TRUE, cex=1.5, col=1, angle=c(45, 135), density=seq(5,35,5))
+
+
+
+```

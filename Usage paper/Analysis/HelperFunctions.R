@@ -186,12 +186,27 @@ legend.top = function(leg.names, bar.col)
   legend("top", legend = leg.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = bar.col, bty="n")
 }
 
+legend.top.hatch = function(leg.names, bar.col, c, a, d)
+{
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+  legend("top", legend = leg.names,  xpd = TRUE, horiz = TRUE, inset = c(0, 0), fill = TRUE , col = c, angle=a, density=d, bty="n")
+}
+
 plot.topper.dual = function()
 {
   default.plot()
   par(oma = c(0, 0, 1.0, 0))
   par(mfrow=c(1,2))
   par(mar = c(4.5, 4.1, 2.1, 1.5))
+}
+
+plot.topper.dual.longY = function()
+{
+  default.plot()
+  par(oma = c(0, 0, 1.0, 0))
+  par(mfrow=c(1,2))
+  par(mar = c(4.5, 6.1, 2.1, 1.5))
 }
 
 plot.mean.sem = function(df, dv, iv, y.max, bar.col, x.names, y.name)
