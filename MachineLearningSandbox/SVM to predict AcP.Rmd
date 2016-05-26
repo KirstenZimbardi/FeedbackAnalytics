@@ -34,53 +34,123 @@ projects()
 #data
 folder = paste0(path, "/Data Stage 2/")
 demog = uqm.csv("demog")
-AcP = uqm.csv("AcPdf")
+#AcP = uqm.csv("AcPdf")
 SubID.index = uqm.csv("SubIDindex")
 
 # Don't need these yet
 #FbP = uqm.csv("FbPdf")
 #FbU = uqm.csv("FbUdf")
-#AcPFbUbins = uqm.csv("AcPFbUbins")
+AcPFbUbins = uqm.csv("AcPFbUbins")
 #mt = uqm.csv("MarkingTimes")
 
-#FbPsum = uqm.csv("FbPsummary") #Check GitHub repo for deleted explaination
-#FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
+FbPsum = uqm.csv("FbPsummary") #Check GitHub repo for deleted explaination
+AcP.FbU.FbP = merge(FbPsum, AcPFbUbins, by="SubmissionID")
 
 #Generalising course names for pubilcation
 demog = gen(demog, 13, 14)
-AcP = gen(AcP, 7, 8)
+#AcP = gen(AcP, 7, 8)
 #FbP = gen(FbP, 15, 16)
 #FbU = gen(FbU, 22, 23)
 #AcPFbUbins = gen(AcPFbUbins, 7, 8)
 SubID.index = gen(SubID.index, 4, 5)
 #mt = gen(mt, 7, 8)
+AcP.FbU.FbP = gen(AcP.FbU.FbP, 15, 16)
 
 ```
 
+Setting up the 'outcome' ie Got an A for final Report  
+```{r}
+df = AcP.FbU.FbP
+stud.R3 = subset(df, report == "Report 3")
+stud.R3$Final.A = stud.R3$Final.Grade > (41 * (100/48))
+
+df2 = merge(df, stud.R3[,c(10,21)], by="StudentID", all.x=T) # use StudentID (10) and Final.A (21)
+
+AcP.FbU.FbP = df2
+
+```
+
+Turning MarkerID and open.bin into Factors for machine learning analysis  
+```{r}
+df = AcP.FbU.FbP
+
+df$MarkerID = as.factor(df$MarkerID)
+df$open.bin = as.factor(df$open.bin)
+
+AcP.FbU.FbP = df
+```
+
+Subsetting rows to work with a single semester, then  
+selecting variables to use as features and reshaping using StudentID as rows  
+```{r}
+#df = AcP.FbU.FbP
+df = subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")
+#df.FinalGrade = melt(df[,c(1,13,17)], id=c("StudentID", "report"), value.name="Final.Grade")
+#df2 = dcast(df.FinalGrade, StudentID~variable+report, mean)
+
+df = df[,c(1:10,13,18,17)]
+dv = names(df[,c(3:12)])
+ls = NULL
+for (i in 1:length(dv)) {
+  ls[[i]] = melt(df[,c(1,13,(i+2))], id=c("StudentID", "report"), value.name=dv[i])
+}
+
+ls2 = NULL
+for (i in 1:length(dv)) {
+  ls2[[i]] = dcast(ls[[i]], StudentID~variable+report, mean)
+}
+
+df2 = ls2[[1]]
+for (i in 2:length(ls2)) {
+  df2 = merge(df2, ls2[[i]], by = "StudentID", all.x=T)
+}
+
+mach.learn = df2
+
+```
+
+add on the 'outcome' ie R3 = A  
+```{r}
+
+#df3 = merge(df2, subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")[,c(1,21)], by="StudentID")
+## use Final.Grade_Report 3
+
+df = mach.learn
+
+df$y = as.numeric(df$`Final.Grade_Report 3` > (41 * (100/48)))
+#check
+#table(df[,37], df[,42])
+
+mach.learn = df[,c(1:36,38:42)]
+
+```
 
 Split data into training, cv and test sets  
 ```{r}
-# how much data do we have
-with(AcP, table(project, course))
+df = mach.learn
 
 # start with L1Sem1
-L1Sem1 = subset(AcP, course == "Level 1" & sem == "Semester 1")
+df2 = subset(df, course == "Level 1" & sem == "Semester 1")
 
 # pulling out lists of students for training, cv and test
-studs = unique(L1Sem1$StudentID)
-stud.reports = as.data.frame.matrix(with(L1Sem1, addmargins(table(StudentID, report),2)))
+studs = unique(df2$StudentID)
+stud.reports = as.data.frame.matrix(with(df2, addmargins(table(StudentID, report),2)))
 stud.complete = row.names(subset(stud.reports, Sum == 4))
 stud.split = splitter(stud.complete, 60)
 
 #train = stud.split[[1]]
 
-L1Sem1.train = L1Sem1[which(L1Sem1$StudentID %in% stud.split[[1]]),]
-L1Sem1.cv = L1Sem1[which(L1Sem1$StudentID %in% stud.split[[2]]),]
-L1Sem1.test = L1Sem1[which(L1Sem1$StudentID %in% stud.split[[3]]),]
+df2.train = df2[which(df2$StudentID %in% stud.split[[1]]),]
+df2.cv = df2[which(df2$StudentID %in% stud.split[[2]]),]
+df2.test = df2[which(df2$StudentID %in% stud.split[[3]]),]
 
 # to generalise to full data set
 #AcP.train = AcP[which(AcP$StudentID %in% stud.split[[1]]),]
 
 ```
+
+
+
+
 
 
