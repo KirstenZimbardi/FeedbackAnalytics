@@ -58,17 +58,6 @@ AcP.FbU.FbP = gen(AcP.FbU.FbP, 15, 16)
 
 ```
 
-Setting up the 'outcome' ie Got an A for final Report  
-```{r}
-df = AcP.FbU.FbP
-stud.R3 = subset(df, report == "Report 3")
-stud.R3$Final.A = stud.R3$Final.Grade > (41 * (100/48))
-
-df2 = merge(df, stud.R3[,c(10,21)], by="StudentID", all.x=T) # use StudentID (10) and Final.A (21)
-
-AcP.FbU.FbP = df2
-
-```
 
 Turning MarkerID and open.bin into Factors for machine learning analysis  
 ```{r}
@@ -111,10 +100,6 @@ mach.learn = df2
 
 add on the 'outcome' ie R3 = A  
 ```{r}
-
-#df3 = merge(df2, subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")[,c(1,21)], by="StudentID")
-## use Final.Grade_Report 3
-
 df = mach.learn
 
 df$y = as.numeric(df$`Final.Grade_Report 3` > (41 * (100/48)))
