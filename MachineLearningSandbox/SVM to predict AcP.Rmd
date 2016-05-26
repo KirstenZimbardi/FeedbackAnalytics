@@ -112,21 +112,21 @@ mach.learn = df[,c(1:36,38:42)]
 Split data into training, cv and test sets  
 ```{r}
 df = mach.learn
+# removing cases w'out a R3 mark
+df = subset(df, y == 1 | y == 0)
 
-# pulling out lists of students for training, cv and test
-studs = unique(df2$StudentID)
-stud.reports = as.data.frame.matrix(with(df2, addmargins(table(StudentID, report),2)))
-stud.complete = row.names(subset(stud.reports, Sum == 4))
-stud.split = splitter(stud.complete, 60)
+# pulling out students with complete records for report marks
+## removed - put back in and adapt if mach learning dosn't cope with NaN in featres
+#studs = unique(df$StudentID)
+#stud.reports = as.data.frame.matrix(with(df, addmargins(table(StudentID, report),2)))
+#stud.complete = row.names(subset(stud.reports, Sum == 4))
 
-#train = stud.split[[1]]
+# splitting data
+stud.split = splitter(df$StudentID, 60)
+df.train = df[which(df$StudentID %in% stud.split[[1]]),]
+df.cv = df[which(df$StudentID %in% stud.split[[2]]),]
+df.test = df[which(df$StudentID %in% stud.split[[3]]),]
 
-df2.train = df2[which(df2$StudentID %in% stud.split[[1]]),]
-df2.cv = df2[which(df2$StudentID %in% stud.split[[2]]),]
-df2.test = df2[which(df2$StudentID %in% stud.split[[3]]),]
-
-# to generalise to full data set
-#AcP.train = AcP[which(AcP$StudentID %in% stud.split[[1]]),]
 
 ```
 
