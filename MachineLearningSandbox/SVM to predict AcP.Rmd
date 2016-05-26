@@ -103,8 +103,7 @@ add on the 'outcome' ie R3 = A
 df = mach.learn
 
 df$y = as.numeric(df$`Final.Grade_Report 3` > (41 * (100/48)))
-#check
-#table(df[,37], df[,42])
+#table(df[,37], df[,42]) #check
 
 mach.learn = df[,c(1:36,38:42)]
 
@@ -113,9 +112,6 @@ mach.learn = df[,c(1:36,38:42)]
 Split data into training, cv and test sets  
 ```{r}
 df = mach.learn
-
-# start with L1Sem1
-df2 = subset(df, course == "Level 1" & sem == "Semester 1")
 
 # pulling out lists of students for training, cv and test
 studs = unique(df2$StudentID)
