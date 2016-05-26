@@ -25,6 +25,7 @@ require(neuralnet)
 source("UQM functions.R")
 source("HelperFunctions.R")
 
+
 path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis"
 ProjectID = read.csv(paste0(path, "/Data Stage 1/ProjectIDs.csv"))
 projects()
@@ -35,34 +36,30 @@ projects()
 folder = paste0(path, "/Data Stage 2/")
 demog = uqm.csv("demog")
 AcP = uqm.csv("AcPdf")
-#FbPsum = uqm.csv("FbPsummary")
+SubID.index = uqm.csv("SubIDindex")
+
+# Don't need these yet
 #FbP = uqm.csv("FbPdf")
 #FbU = uqm.csv("FbUdf")
 #AcPFbUbins = uqm.csv("AcPFbUbins")
-#SubID.index = uqm.csv("SubIDindex")
 #mt = uqm.csv("MarkingTimes")
 
-#Generalising
+#FbPsum = uqm.csv("FbPsummary") # If FbPsum is needed, work thru commentary below B4 including, NB ## was previously commented out and only the last line with # was actually being used - kept so it makes sense later
+
+##FbPsum does not include project details, need to merge in from AcP
+##FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
+##FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
+##ignoring this for now and just generating Fig 2-4 based on data that is in FbPsummary.csv
+#FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
+
+#Generalising course names for pubilcation
 demog = gen(demog, 13, 14)
 AcP = gen(AcP, 7, 8)
-FbP = gen(FbP, 15, 16)
-FbU = gen(FbU, 22, 23)
-AcPFbUbins = gen(AcPFbUbins, 7, 8)
+#FbP = gen(FbP, 15, 16)
+#FbU = gen(FbU, 22, 23)
+#AcPFbUbins = gen(AcPFbUbins, 7, 8)
 SubID.index = gen(SubID.index, 4, 5)
-mt = gen(mt, 7, 8)
-#FbPsum does not inlude project details, need to merge in from AcP
-#FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
-#FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
-#ignoring this for now and just generating Fig 2-4 based on data that is in FbPsummary.csv
-FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
+#mt = gen(mt, 7, 8)
+
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
