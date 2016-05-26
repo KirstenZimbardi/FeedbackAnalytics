@@ -18,6 +18,8 @@ require(dplyr)
 #load functions
 source("UQM functions.R")
 source("HelperFunctions.R")
+source("HelperFunctionsGraphing.R")
+source("HelperFunctionsLists.R")
 
 ProjectID = read.csv("./Data Stage 1/ProjectIDs.csv")
 projects()

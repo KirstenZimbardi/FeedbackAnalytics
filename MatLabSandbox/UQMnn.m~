@@ -36,6 +36,10 @@ end
 %table(d{1},d{2},'VariableNames',catVars(1:2))
 %table(d{1:7},'VariableNames',catVars(1:7))
 %table(d{:},'VariableNames',catVars) %hoooooorrrraayyyyyyy!!!!!
-cats = table(b{:},'VariableNames',catVars) %also works
+ee = table(b{:},'VariableNames',catVars) %also works
 
 
+%% not working
+for i = catVars
+    b{i} = categorical(AcP{:,i})
+end
