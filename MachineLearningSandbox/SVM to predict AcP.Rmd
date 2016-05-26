@@ -25,12 +25,9 @@ require(neuralnet)
 source("UQM functions.R")
 source("HelperFunctions.R")
 
-
 path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis"
 ProjectID = read.csv(paste0(path, "/Data Stage 1/ProjectIDs.csv"))
 projects()
-#graphs()
-
 
 #data
 folder = paste0(path, "/Data Stage 2/")
@@ -44,12 +41,7 @@ SubID.index = uqm.csv("SubIDindex")
 #AcPFbUbins = uqm.csv("AcPFbUbins")
 #mt = uqm.csv("MarkingTimes")
 
-#FbPsum = uqm.csv("FbPsummary") # If FbPsum is needed, work thru commentary below B4 including, NB ## was previously commented out and only the last line with # was actually being used - kept so it makes sense later
-
-##FbPsum does not include project details, need to merge in from AcP
-##FbP.sum = merge(FbPsum, AcP, by="SubmissionID", all.y=T)
-##FbP.sum[which(is.na(FbP.sum[,2])),] #bunch of Submissions for which there are marks but no meta-data on Fb provision - possible error in generating FbPsummary?
-##ignoring this for now and just generating Fig 2-4 based on data that is in FbPsummary.csv
+#FbPsum = uqm.csv("FbPsummary") #Check GitHub repo for deleted explaination
 #FbP.AcP = merge(FbPsum, AcP, by="SubmissionID")
 
 #Generalising course names for pubilcation
