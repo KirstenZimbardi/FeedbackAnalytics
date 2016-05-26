@@ -13,17 +13,19 @@ rm(list=ls())
 
 ## Playing with SVM to predict academic performance
 
-load data
-```{r}
+loading data...  
+```{r, echo=FALSE}
 #packages
 require(reshape2)
 require(dplyr)
+require(caTools)
 require(e1071)
 require(neuralnet)
 
 #functions
 source("UQM functions.R")
 source("HelperFunctions.R")
+source("/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/MachineLearningSandbox/HelperFunctionsMachineLearning.R")
 
 path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis"
 ProjectID = read.csv(paste0(path, "/Data Stage 1/ProjectIDs.csv"))
@@ -54,4 +56,45 @@ SubID.index = gen(SubID.index, 4, 5)
 #mt = gen(mt, 7, 8)
 
 ```
+
+
+Split data into training, cv and test sets  
+```{r}
+# how much data do we have
+with(AcP, table(project, course))
+
+# start with L1Sem1
+L1Sem1 = subset(AcP, course == "Level 1" & sem == "Semester 1")
+studs = unique(L1Sem1$StudentID)
+L1Sem1[which(L1Sem1$StudentID == studs[100:103]),1:3]
+L1Sem1[which(L1Sem1$StudentID == "S8582385"),1:3]
+
+stud.reports = as.data.frame.matrix(with(L1Sem1, addmargins(table(StudentID, report),2)))
+stud.complete = row.names(subset(stud.reports, Sum == 4))
+
+# Randomly split the data into training and testing sets
+#set.seed(1000)
+split = sample.split(stud.complete, SplitRatio = 0.60)
+
+# Split up the data using subset
+train = subset(stud.complete, split==TRUE)
+test.all = subset(stud.complete, split==FALSE)
+split = sample.split(test.all, SplitRatio = 0.50)
+cv = subset(test.all, split==TRUE)
+test = subset(test.all, split==FALSE)
+
+# as function
+s = splitter(stud.complete, 60)
+
+
+stud.train = sample(stud.complete, 0.6*length(stud.complete))
+
+
+
+
+
+stud.train.index = stud.complete[sample(stud.complete, 0.06*length(stud.complete)),]
+stud.complete[which(stud.complete != stud.train)] - stud.train
+```
+
 
