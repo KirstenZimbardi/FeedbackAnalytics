@@ -80,8 +80,14 @@ ls.df = function(ls, adj)
 gen = function(df, col.course, col.sem){
   df[,col.course] = gsub("BIOL1040", "Level 1", df[,col.course])
   df[,col.course] = gsub("BIOM2011", "Level 2", df[,col.course])
+  if (is.numeric(df[1,col.sem])) { 
+    df[,col.sem] = gsub("1", "Semester 1", df[,col.sem])
+    df[,col.sem] = gsub("2", "Semester 2", df[,col.sem])
+  }
+  if (is.character(df[1,col.sem])) { 
   df[,col.sem] = gsub("Sem1", "Semester 1", df[,col.sem])
   df[,col.sem] = gsub("Sem2", "Semester 2", df[,col.sem])
+  }
   return(df)
 }
 

@@ -22,12 +22,20 @@ require(caTools)
 require(e1071)
 require(neuralnet)
 
-#functions
-source("UQM functions.R")
-source("HelperFunctions.R")
-source("/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/MachineLearningSandbox/HelperFunctionsMachineLearning.R")
+# ? should convert to github repo
 
-path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis"
+#path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis" #MacAir
+path = "/Users/zimbardi/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis/" #iMac
+
+#functions
+source(paste0(path, "UQM functions.R"))
+source(paste0(path, "HelperFunctions.R"))
+#path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis" #MacAir
+path = "/Users/zimbardi/Dropbox/UQ/FeedbackAnalytics/MachineLearningSandbox/" #iMac
+source(paste0(path, "HelperFunctionsMachineLearning.R"))
+
+#path = "/Users/KirstenZ/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis" #MacAir
+path = "/Users/zimbardi/Dropbox/UQ/FeedbackAnalytics/Usage paper/Analysis/" #iMac
 ProjectID = read.csv(paste0(path, "/Data Stage 1/ProjectIDs.csv"))
 projects()
 
@@ -59,14 +67,22 @@ AcP.FbU.FbP = gen(AcP.FbU.FbP, 15, 16)
 ```
 
 
-Turning MarkerID and open.bin into Factors for machine learning analysis  
+Turning MarkerID and open.bin into Factors for machine learning analysis -   
+NB had to remove both at next step coz can't aggregate factors during dcast. Would need to delete duplicates (StudentID+report) to include these in machine learning models  
 ```{r}
 df = AcP.FbU.FbP
 
-df$MarkerID = as.factor(df$MarkerID)
+df$MarkerID = as.factor(df$MarkerID) 
 df$open.bin = as.factor(df$open.bin)
 
 AcP.FbU.FbP = df
+
+# checking for duplicate records (StudentID+report) within a single semester
+
+df = subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")
+sub.count = with(df, table(StudentID, report))
+which(isTRUE(sub.count>1)) # no duplicate submissions - so don't need mean for dcast?
+
 ```
 
 Subsetting rows to work with a single semester, then  
@@ -77,16 +93,18 @@ df = subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")
 #df.FinalGrade = melt(df[,c(1,13,17)], id=c("StudentID", "report"), value.name="Final.Grade")
 #df2 = dcast(df.FinalGrade, StudentID~variable+report, mean)
 
-df = df[,c(1:10,13,18,17)]
-dv = names(df[,c(3:12)])
+#df columns = "StudentID", "report", "Final.Grade”, “Freehand”, “Highlight”, “Recording”, “Text”, “total.words”, “auidio.min”, “audio.words”, “txt.words”, “OpenDuration.min”, “open.bin”, “MarkerID" 
+#dv = "Final.Grade”, “Freehand”, “Highlight”, “Recording”, “Text”, “total.words”, “auidio.min”, “audio.words”, “txt.words”, “OpenDuration.min”, “open.bin”, “MarkerID" 
+df = df[,c(10,17,13,2:9,18,19,11)]
+dv = names(df[,c(3:ncol(df))])
 ls = NULL
 for (i in 1:length(dv)) {
-  ls[[i]] = melt(df[,c(1,13,(i+2))], id=c("StudentID", "report"), value.name=dv[i])
+  ls[[i]] = melt(df[,c(1,2,(i+2))], id=c("StudentID", "report"), value.name=dv[i])
 }
 
 ls2 = NULL
 for (i in 1:length(dv)) {
-  ls2[[i]] = dcast(ls[[i]], StudentID~variable+report, mean)
+  ls2[[i]] = dcast(ls[[i]], StudentID~variable+report)
 }
 
 df2 = ls2[[1]]
@@ -94,38 +112,118 @@ for (i in 2:length(ls2)) {
   df2 = merge(df2, ls2[[i]], by = "StudentID", all.x=T)
 }
 
+for (i in 42:49) {
+  df2[,i] = as.factor(df2[,i]) 
+}
+
+
 mach.learn = df2
 
 ```
 
-add on the 'outcome' ie R3 = A  
+add on the 'outcome' ie R3 = A and remove R3 Final.Grade from dep vars    
 ```{r}
 df = mach.learn
 
-df$y = as.numeric(df$`Final.Grade_Report 3` > (41 * (100/48)))
+df$y = as.factor(df$`Final.Grade_Report 3` > (41 * (100/48)))
 #table(df[,37], df[,42]) #check
 
-mach.learn = df[,c(1:36,38:42)]
+mach.learn = df[,c(1:8,10:ncol(df))]
 
+```
+
+removing cases w missing data 
+(svm will train but get errors during prediction if any feature contains NA or NaN)  
+```{r}
+df = mach.learn
+
+df2 = df[!rowSums(is.na(df)),] # drops data from 705 obs to 461! #actually most Nas (90) in OpenDuration.min, min(OpenDuration.min) > and open.bin shows 66, 44, 50 and 104 unopened for R0 -> R4, so convert NA's to 0
+
+cols = c("OpenDuration.min_Report 0", "OpenDuration.min_Report 1", "OpenDuration.min_Report 2", "OpenDuration.min_Report 3")
+for (i in 1:nrow(df)) {
+  for (j in 1:length(cols)) {
+    if (is.na(df[i,cols[j]])) {
+      df[i,cols[j]] = 0
+} } }
+df2 = df[!rowSums(is.na(df)),] # brings data back up to 609 obs :)
+
+mach.learn = df2
 ```
 
 Split data into training, cv and test sets  
 ```{r}
 df = mach.learn
-# removing cases w'out a R3 mark
-df = subset(df, y == 1 | y == 0)
 
-# pulling out students with complete records for report marks
-## removed - put back in and adapt if mach learning dosn't cope with NaN in featres
-#studs = unique(df$StudentID)
-#stud.reports = as.data.frame.matrix(with(df, addmargins(table(StudentID, report),2)))
-#stud.complete = row.names(subset(stud.reports, Sum == 4))
-
-# splitting data
 stud.split = splitter(df$StudentID, 60)
-df.train = df[which(df$StudentID %in% stud.split[[1]]),]
-df.cv = df[which(df$StudentID %in% stud.split[[2]]),]
-df.test = df[which(df$StudentID %in% stud.split[[3]]),]
+df.train = df[which(df$StudentID %in% stud.split[[1]]),2:ncol(df)]
+df.cv = df[which(df$StudentID %in% stud.split[[2]]),2:ncol(df)]
+df.test = df[which(df$StudentID %in% stud.split[[3]]),2:ncol(df)]
+```
+
+
+svm  
+```{r}
+df = df.train[,c(2:ncol(df.train))]
+#df$y = as.logical(df$y)
+svmfit <- svm(y ~., data=df)
+print(svmfit)
+#my_cols <- c("#00AFBB", "#E7B800")
+#plot(svmfit, df) # can't plot coz >2 variables (high dimensionality data)
+p <- predict(svmfit, df.cv[,c(2:(ncol(df.cv)-1))])
+df.cv$p = p
+cm = as.data.frame.matrix(addmargins(with(df.cv, table(y, p))))
+
+cmStats = conMatrixStats(cm)
+cmStats
+```
+
+So, pretty good (predicts with 80% accuracy who will get an A for the final report and who won't). Next to generalise ie add in demographic data and reduce back to Report 1 (mark, feedback provision and use) so can use the model on 1st and 2nd year data, and would also have an earlier indication of performance on final report...  
+
+
+```{r}
+#length(which(duplicated(AcP.FbU.FbP[,c("StudentID", "course", "sem", "report")])))
+#dup = AcP.FbU.FbP[(which(duplicated(AcP.FbU.FbP[,c("StudentID", "course", "sem", "report")]))),]
+df = AcP.FbU.FbP
+df2 = df[-which(duplicated(df[c("StudentID", "course", "sem")])),c("StudentID","course", "sem")]
+
+# Adding in demographic data  
+df3 = merge(df2, demog, by.x=c("StudentID", "course", "sem"), by.y=c("StudentID", "course", "sem"))
+
+
+#df = subset(AcP.FbU.FbP, course == "Level 1" & sem == "Semester 1")
+#df.FinalGrade = melt(df[,c(1,13,17)], id=c("StudentID", "report"), value.name="Final.Grade")
+#df2 = dcast(df.FinalGrade, StudentID~variable+report, mean)
+
+
+#dv = "Final.Grade”, “Freehand”, “Highlight”, “Recording”, “Text”, “total.words”, “auidio.min”, “audio.words”, “txt.words”, “OpenDuration.min”, “open.bin”, “MarkerID"
+df2 = df[,c("StudentID","course", "sem", "report", "Final.Grade", "Freehand", "Highlight", "Recording", "Text", "total.words", "auidio.min", "audio.words", "txt.words", "OpenDuration.min", "open.bin", "MarkerID")]
+#dv = names(df2[,c(3:ncol(df2))])
+dv = c("Final.Grade", "Freehand", "Highlight", "Recording", "Text", "total.words", "auidio.min", "audio.words", "txt.words", "OpenDuration.min", "open.bin", "MarkerID")
+
+ls = NULL
+for (i in 1:length(dv)) {
+  ls[[i]] = melt(df2[,c(1:4,(i+4))], id=c("StudentID", "course", "sem", "report"), value.name=dv[i])
+}
+
+
+ls2 = NULL
+for (i in 1:length(dv)) {
+  ls2[[i]] = dcast(ls[[i]], StudentID~variable+course+sem+report)
+}
+
+#fixed for all courses to here
+
+df2 = ls2[[1]]
+for (i in 2:length(ls2)) {
+  df2 = merge(df2, ls2[[i]], by = "StudentID", all.x=T)
+}
+
+for (i in 42:49) {
+  df2[,i] = as.factor(df2[,i]) 
+}
+
+
+mach.learn2 = df2
 
 
 ```
